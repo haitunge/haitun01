@@ -383,11 +383,6 @@
             border-left: 4px solid #ff6b6b;
         }
         
-        .dimension-analysis h4 {
-            color: #dc3545;
-            margin-bottom: 10px;
-        }
-        
         .dimension-commentary {
             margin-top: 15px;
             padding: 15px;
@@ -791,6 +786,16 @@
         <p>当前时间: <span id="currentTime"></span></p>
         <button class="admin-btn" id="generateCodesBtn">生成20个激活码（有效期30天）</button>
         <button class="admin-btn" id="clearStorageBtn">清除所有数据</button>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #f0f8ff; border-radius: 8px; border-left: 4px solid #74b9ff;">
+            <h4 style="color: #2d7dd2; margin-bottom: 10px;">预设激活码</h4>
+            <p>以下激活码已预设，所有用户均可使用：</p>
+            <div style="margin-top: 10px;">
+                <p><strong>DHKE0788DU</strong> - 无限使用次数</p>
+                <p><strong>DHYT8867RE</strong> - 无限使用次数</p>
+            </div>
+        </div>
+        
         <div class="activation-codes" id="activationCodesList">
             <!-- 激活码列表将在这里显示 -->
         </div>
@@ -961,13 +966,19 @@
 
         // 立即执行的初始化代码 - 确保在DOM加载前就设置好全局变量
         (function() {
-            // 激活码管理系统 - 每个激活码仅限使用一次
+            // 激活码管理系统
             window.ADMIN_PASSWORD = "hai306952";
             window.activationCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
             window.adminClickCount = 0;
             window.adminClickTimer = null;
             window.radarChart = null;
             window.barChart = null;
+            
+            // 预设激活码
+            window.PRESET_CODES = [
+                { code: "DHKE0788DU", maxUses: 10000, isPublic: true, preset: true },
+                { code: "DHYT8867RE", maxUses: 10000, isPublic: true, preset: true }
+            ];
             
             // 全局管理员唤醒函数
             window.showAdminAccess = function() {
@@ -980,8 +991,7 @@
                     document.getElementById('currentTime').textContent = new Date().toLocaleString();
                     
                     // 显示现有激活码
-                    const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-                    displayActivationCodes(storedCodes);
+                    displayActivationCodes(window.activationCodes);
                 } else if (password !== null) {
                     alert('管理员密码错误');
                 }
@@ -1078,263 +1088,528 @@
                     "双方对这段感情的未来规划方向一致，都有明确的结婚时间节点或计划吗？",
                     "即使相处超过1年，你依然会被对方的某些特质吸引，无'审美疲劳'感吗？",
                     "在感情中，你从未有过'将就''凑活'的想法，而是发自内心喜爱并认可对方吗？",
-                    "当对方生病或遭遇挫折时，你会主动照顾并提供实际帮助，而非仅口头关心吗？",
-                    "你们对彼此的爱意表达频率（如每天说'我爱你'）和方式（如拥抱、礼物）感到满意吗？"
+                    "当对方犯错时，你会理性沟通解决问题，而非翻旧账、人身攻击或冷战吗？",
+                    "当对方与异性有正常工作/社交接触时，你能完全信任，不会过度猜忌或查岗吗？"
                 ]
             },
             {
-                name: "性格匹配",
+                name: "性格适配",
                 id: "personality",
-                questions: 10,
-                passScore: 30,
+                questions: 15,
+                passScore: 45,
                 questionsText: [
-                    "你们的情绪稳定性相近（如双方都平和或都外向），不会因一方情绪波动过大而频繁冲突吗？",
-                    "你们对'社交频率'的需求一致（如都喜欢宅家或都喜欢外出社交）吗？",
-                    "你们的生活节奏（如作息时间、做事快慢）相近，不会因此产生明显矛盾吗？",
-                    "面对压力时，你们的应对方式（如倾诉、独处）能互相理解和支持，而非互相指责吗？",
-                    "你们的幽默感和笑点相似，能经常因同一事物开怀大笑吗？",
-                    "你们的性格具有互补性（如一方细心、一方粗心），能互相弥补而非互相排斥吗？",
-                    "你们对'仪式感'的重视程度一致（如都重视生日、纪念日或都觉得无所谓）吗？",
-                    "你们处理冲突的方式相似（如都喜欢当场解决或都需要冷静后再沟通）吗？",
-                    "你们的控制欲强度相当，不会因一方过度掌控或过度放任而产生不适吗？",
-                    "你们的表达直接程度相近（如都坦率直接或都含蓄内敛），能准确理解对方的言外之意吗？"
+                    "你和对方的性格（如外向/内向、急躁/沉稳）要么互补，要么相似到能自然共处吗？",
+                    "对方情绪稳定，不会因日常琐事（如外卖延迟）随意发脾气或持续冷战超过1天吗？",
+                    "你做事的节奏（如做事快慢、细致程度）与对方契合，不会因'太拖沓'或'太急躁'产生矛盾吗？",
+                    "面对重大决策时，你们一个偏理性分析一个偏感性考量，能相互平衡做出最优选择吗？",
+                    "对方有耐心倾听你的想法和情绪，不会随意打断、否定或敷衍回应吗？",
+                    "你和对方都属于愿意直接表达自身需求（如'我希望你多陪我'），而非让对方猜测的人吗？",
+                    "当产生分歧时，对方会积极沟通解决问题，而非以'算了''你随便'逃避吗？",
+                    "你欣赏对方的性格特质（如乐观、坚韧），且对方也明确认可你的性格优势吗？",
+                    "对方待人接物的方式（如热情好客/内敛礼貌）符合你的社交预期，无强烈不适感吗？",
+                    "在压力面前，你们的应对方式（如倾诉减压/独处冷静）不会相互冲突，能彼此包容吗？",
+                    "你和对方都有包容彼此性格中小瑕疵（如偶尔固执）的胸怀，不会因此频繁争吵吗？",
+                    "对方不会因固执己见而拒绝接受你的合理建议（如'这个方案可以优化'）吗？",
+                    "你们在相处中，幽默感的契合度高，能get到对方的笑点并经常一起开怀大笑吗？",
+                    "对方的性格中没有让你无法忍受的致命缺陷（如极端自私、暴力倾向、控制欲过强）吗？",
+                    "你觉得和对方相处时，无需刻意伪装自己（如假装喜欢某事物），能轻松做真实的自己吗？"
                 ]
             },
             {
                 name: "生活习惯",
                 id: "lifestyle",
-                questions: 10,
-                passScore: 30,
+                questions: 12,
+                passScore: 36,
                 questionsText: [
-                    "你们的饮食习惯（如口味咸淡、是否吃辣、三餐时间）相近或能互相适应吗？",
-                    "你们对家居整洁度的要求一致（如都喜欢整洁或都能接受适度凌乱）吗？",
-                    "你们的作息时间（如早睡早起或晚睡晚起）相近，不会互相干扰吗？",
-                    "你们对吸烟、饮酒、熬夜等生活习惯的接受度一致吗？",
-                    "你们的消费习惯（如理性消费或感性消费）相似，不会因花钱方式频繁争执吗？",
-                    "你们对家务分工的观念一致（如共同承担或按能力分工）吗？",
-                    "你们的运动习惯（如是否坚持运动、喜欢的运动类型）相近或能互相支持吗？",
-                    "你们对'私人空间'的需求程度一致（如需要独处时间的多少）吗？",
-                    "你们对节假日安排的偏好（如外出旅行或居家休息）相似吗？",
-                    "你们对宠物的态度（如是否养宠物、喜欢什么宠物）一致吗？"
+                    "你和对方的作息时间（如早睡早起/熬夜）基本一致，或能互不干扰（如熬夜不影响对方休息）吗？",
+                    "双方的饮食习惯（如口味咸淡、是否吃辣、三餐规律）差异不大，或能相互适应（如单独做一份辣菜）吗？",
+                    "你们对居住环境的整洁要求（如物品摆放、每周打扫频率）标准相近，不会因'太乱''太洁癖'争执吗？",
+                    "你经常因对方的生活习惯（如不爱做家务、随手扔东西）感到困扰吗？（反）",
+                    "在家务分工上，双方都愿意主动承担，不会因'这是你的事'推诿扯皮吗？",
+                    "你和对方的个人卫生习惯（如洗澡频率、衣物及时清洗）符合彼此的接受范围吗？",
+                    "对方的消费习惯（如理性消费/适度月光）与你的消费观念契合，不会因'太抠''太浪费'争吵吗？",
+                    "你们在休闲时间的安排（如宅家追剧/外出游玩）上能达成共识，不会强迫对方参与吗？",
+                    "对方不会因沉迷游戏、追剧等爱好而忽视生活责任（如不做饭、不工作）吗？",
+                    "你们对'仪式感'的重视程度（如节日庆祝、纪念日过法）相近，不会因'不浪漫''太折腾'矛盾吗？",
+                    "在生活细节上（如随手关灯、节约用水），双方的习惯不会引发频繁小摩擦吗？",
+                    "节假日期间，你们能平衡'陪伴彼此'与'陪伴原生家庭'的时间，不产生冲突吗？"
                 ]
             },
             {
-                name: "自我认知",
+                name: "自身条件",
                 id: "self",
                 questions: 10,
                 passScore: 30,
                 questionsText: [
-                    "你们都清楚自己在感情中的需求和底线，并已向对方明确表达吗？",
-                    "你们都能接纳自己的不完美，并不过度要求对方完美吗？",
-                    "你们都有独立的社交圈和个人爱好，不会过度依赖对方吗？",
-                    "你们都能正视自己的错误并主动道歉，而非固执己见吗？",
-                    "你们都了解自己的情绪触发点，并能主动避免在对方面前过度爆发吗？",
-                    "你们都有清晰的个人边界，并尊重对方的边界吗？",
-                    "你们都有独立处理问题的能力，不会事事依赖对方解决吗？",
-                    "你们都清楚自己在婚姻中的角色期待（如丈夫/妻子应承担的责任），且双方期待一致吗？",
-                    "你们都能进行自我反思，并在关系中持续成长吗？",
-                    "你们都能在保持自我的同时，为关系做出适当调整和妥协吗？"
+                    "你认可对方的外貌、身材，且对方明确表示满意你的外在形象，无嫌弃感吗？",
+                    "对方的身体健康状况良好，无影响婚姻生活的重大疾病（如传染性疾病、严重慢性病）吗？",
+                    "你欣赏对方的个人品德（如诚信、善良、有责任心、孝顺），无'人品存疑'的感觉吗？",
+                    "对方有独立生活的能力（如独自做饭、处理琐事），能照顾好自己及未来的家庭吗？",
+                    "你和对方的年龄差距在你可接受的合理范围内，且双方及家人无异议吗？",
+                    "对方有持续学习和进步的意识（如学新技能、读专业书），不会安于现状、停滞不前吗？",
+                    "你认可对方的个人价值观念（如对善恶、对错、人生意义的判断），无根本性冲突吗？",
+                    "对方有良好的自控能力，能约束自己的言行（如不酗酒、不冲动行事）吗？",
+                    "你觉得对方的个人魅力（如气质、谈吐、处事能力）能吸引你长期相处，无厌倦感吗？",
+                    "对方尊重你的个人边界（如不随意翻你手机、不干涉你的社交），给你足够私人空间吗？"
                 ]
             },
             {
-                name: "认知观念",
+                name: "学历与认知",
                 id: "education",
-                questions: 10,
-                passScore: 30,
+                questions: 8,
+                passScore: 24,
                 questionsText: [
-                    "你们对婚姻的理解和期待（如婚姻的意义、夫妻的责任）基本一致吗？",
-                    "你们对性别角色的认知（如男主外女主内或共同承担）相似吗？",
-                    "你们对子女教育的理念（如严厉教育或快乐成长）基本一致吗？",
-                    "你们对孝顺父母的方式和程度期待一致吗？",
-                    "你们对社会热点问题的看法虽不必完全相同，但能互相尊重理解吗？",
-                    "你们对文化、艺术、娱乐的兴趣和理解程度相近，有共同话题吗？",
-                    "你们对金钱的意义和价值的看法（如储蓄重要还是享受当下）基本一致吗？",
-                    "你们对工作与生活平衡的理解相似吗？",
-                    "你们对健康和养生的重视程度相近吗？",
-                    "你们对宗教信仰或精神追求的态度（如有信仰或无信仰）互相尊重吗？"
+                    "你和对方的学历水平相近，或差距不会导致认知层面的严重分歧（如无法沟通价值观）吗？",
+                    "在讨论社会热点、文化话题时，你们能有平等的交流，而非'鸡同鸭讲'或相互贬低吗？",
+                    "对方有阅读、学习等提升认知的习惯，能与你共同成长，而非拒绝接受新事物吗？",
+                    "你认可对方的学习能力和接受新事物的态度（如愿意学用新软件、理解新观念）吗？",
+                    "双方对教育理念（如子女培养方式、是否体罚孩子）的认知基本一致，无重大分歧吗？",
+                    "在认知事物的角度上，你们的差异能形成互补（如你重细节他重全局），而非相互对立吗？",
+                    "对方不会因学历或认知优势而轻视你的想法和观点，能平等对待你的表达吗？",
+                    "你觉得双方的认知水平足以共同应对未来生活中的问题（如子女教育、人际矛盾）吗？"
                 ]
             },
             {
-                name: "事业规划",
+                name: "工作与事业",
                 id: "career",
                 questions: 10,
                 passScore: 30,
                 questionsText: [
-                    "你们对各自的职业发展方向和目标互相支持，而非互相阻碍吗？",
-                    "你们对工作压力和加班的接受程度相近，能互相理解吗？",
-                    "你们对未来3-5年的职业规划有共识，并能互相配合吗？",
-                    "你们对工作与家庭的优先级排序基本一致吗？",
-                    "你们对创业或稳定工作的偏好一致，或能支持对方的选择吗？",
-                    "你们对异地工作或出差的接受程度有共识吗？",
-                    "你们对职业培训和继续教育的态度（如是否愿意持续学习）相似吗？",
-                    "你们对退休年龄和退休后的生活规划有大致共识吗？",
-                    "你们能在职业发展上互相提供建议和支持吗？",
-                    "你们对女性婚后是否继续工作的看法一致吗？"
+                    "你认可对方的职业选择和工作发展前景，无'这份工作没前途'的否定感吗？",
+                    "对方的工作强度（如加班频率、出差情况）让你长期感到被忽视吗？（反）",
+                    "你们能相互支持对方的工作（如帮对方准备资料、倾听职场烦恼），在对方忙碌时给予理解吗？",
+                    "对方对待工作的态度认真负责，有职业素养（如不摸鱼、遵守职场规则）吗？",
+                    "你和对方的工作领域虽不同，但能尊重彼此的职业价值（如不贬低对方职业）吗？",
+                    "双方对事业的追求目标（如安稳度日/拼搏奋斗/创业）基本一致，无根本性冲突吗？",
+                    "对方不会因工作而完全忽视家庭，能平衡工作与生活的关系（如周末留时间陪伴）吗？",
+                    "在职业发展遇到瓶颈时，你们能相互鼓励、共同寻找解决办法（如帮对方分析机会）吗？",
+                    "你能接受对方工作中必要的社交应酬，且对方会主动保持边界（如报备行程）吗？",
+                    "双方都认为工作是为了更好的生活，而非牺牲生活质量成就工作吗？"
                 ]
             },
             {
-                name: "经济观念",
+                name: "经济条件",
                 id: "finance",
                 questions: 10,
                 passScore: 30,
                 questionsText: [
-                    "你们对婚前财产公证的态度一致吗？",
-                    "你们对婚后财务支配方式（如AA制、共同账户或一方管理）有共识吗？",
-                    "你们对每月储蓄比例和理财方式的看法基本一致吗？",
-                    "你们对大额消费（如买房、买车）的决策方式有共识吗？",
-                    "你们对奢侈品和非必需品的消费观念相似吗？",
-                    "你们对借钱给亲友的态度和原则一致吗？",
-                    "你们对未来房贷、车贷等负债的接受程度相近吗？",
-                    "你们对双方父母的经济支持力度有共识吗？",
-                    "你们对保险的重视程度和购买意愿一致吗？",
-                    "你们对'足够的经济基础'的定义（如存款数额、收入水平）相近吗？"
+                    "你和对方的经济收入水平能满足未来家庭的基本生活需求（住房、饮食、医疗）吗？",
+                    "双方对家庭经济的规划（如每月储蓄比例、是否投资、消费上限）观念一致吗？",
+                    "对方有良好的理财习惯，不会过度透支消费（如刷爆信用卡）或盲目投资吗？",
+                    "你们能坦诚交流彼此的收入、负债情况（如房贷、信用卡债），无经济隐瞒吗？",
+                    "对于婚房、彩礼/嫁妆等重大经济问题，双方及家庭已达成明确共识吗？",
+                    "对方有稳定的收入来源，经济状况不会因失业、行业波动等出现大幅波动吗？",
+                    "你们都认同'经济共担、责任共享'的家庭经济理念，不会因'谁赚钱多'争执吗？",
+                    "面对突发经济状况（如家人患病、失业），你们有足够的应急储备金或应对能力吗？",
+                    "对方不会因经济条件差异而产生自卑或自负心理，能平等对待彼此的经济贡献吗？",
+                    "面对大额消费（如超过月薪50%），你们能提前沟通、达成共识后再决策吗？"
                 ]
             },
             {
-                name: "家庭关系",
+                name: "家庭与亲戚",
                 id: "family",
                 questions: 10,
                 passScore: 30,
                 questionsText: [
-                    "你们对婚后是否与父母同住的想法一致吗？",
-                    "你们的父母对这段关系持支持态度吗？",
-                    "你们对探望双方父母的频率和方式有共识吗？",
-                    "你们对处理婆媳/翁婿关系的原则有共识吗？",
-                    "你们对亲戚间的往来疏密程度期待一致吗？",
-                    "你们对生育子女的数量和时间规划有共识吗？",
-                    "你们对谁来主要照顾孩子的问题有共识吗？",
-                    "你们对子女教育中父母角色分工的想法一致吗？",
-                    "你们对家庭重大决策（如买房、投资）的参与方式（如仅夫妻决定或咨询父母）有共识吗？",
-                    "你们对家庭节日（如春节）在谁家过的安排有共识吗？"
+                    "双方父母都明确认可你们的关系，支持你们结婚，无强烈反对态度吗？",
+                    "你能接受对方的家庭氛围（如民主协商/长辈主导/大家庭聚居），且对方也能适应你的家庭吗？",
+                    "对方的父母通情达理，不会过度干涉你们未来的小家庭生活（如插手家务、消费）吗？",
+                    "你们对'婆媳/岳婿关系'有清晰的认知，知道如何保持边界、妥善处理矛盾吗？",
+                    "双方在赡养老人的责任（如每月赡养费、照顾方式）和方式上达成一致意见了吗？",
+                    "对方的亲戚关系简单和谐，不会出现过度打扰你们生活（如频繁借钱、住家）的情况吗？",
+                    "你们都认为'小家庭利益优先'，同时尊重双方原生家庭，不会因原生家庭牺牲小家庭吗？",
+                    "在涉及双方家庭的事务上（如节日送礼、家人求助），对方会与你共同商量，而非独自决定吗？",
+                    "你和对方的家人能友好相处，见面无尴尬或冲突，能正常沟通交流吗？",
+                    "双方都愿意为维系彼此家庭的和谐付出努力（如主动问候、参与家庭活动）吗？"
                 ]
             },
             {
-                name: "人生目标",
+                name: "理想与追求",
                 id: "dreams",
-                questions: 10,
-                passScore: 30,
+                questions: 7,
+                passScore: 21,
                 questionsText: [
-                    "你们对未来居住地（如城市选择）的规划一致吗？",
-                    "你们对生活品质的追求（如简单生活或精致生活）程度相近吗？",
-                    "你们对是否要孩子以及生育时间的规划一致吗？",
-                    "你们对退休后的生活安排（如环游世界或居家养老）有相似憧憬吗？",
-                    "你们对家庭与事业的平衡优先级看法一致吗？",
-                    "你们对未来5年、10年的生活蓝图有相似构想吗？",
-                    "你们对精神生活的追求（如阅读、旅行、艺术）程度相近吗？",
-                    "你们对是否移民或长期出国生活的想法一致吗？",
-                    "你们对人生成功的定义（如事业有成或家庭幸福）相似吗？",
-                    "你们对如何度过晚年的设想（如与子女同住或独立生活）一致吗？"
+                    "你和对方的人生理想（如生活状态、人生价值实现方式）方向一致吗？",
+                    "对方支持你的人生追求（如职业理想、兴趣发展），且你也愿意成为对方追梦路上的后盾吗？",
+                    "你们对未来生活的期许（如定居城市、生活品质、是否丁克）基本相同吗？",
+                    "双方都有共同的中长期目标（如3年买房、5年创业、一起旅行）吗？",
+                    "对方的理想不会与家庭责任产生严重冲突（如为追梦长期异地、不顾家庭）吗？",
+                    "你们都愿意为实现共同的理想而一起努力奋斗（如共同存钱、分工推进）吗？",
+                    "你觉得和对方在一起，能共同成为更好的自己，实现个人与家庭的双重价值吗？"
                 ]
             },
             {
                 name: "兴趣爱好",
                 id: "hobbies",
-                questions: 10,
-                passScore: 30,
+                questions: 3,
+                passScore: 9,
                 questionsText: [
-                    "你们至少有3项以上共同的兴趣爱好，可以一起参与吗？",
-                    "你们虽然有不同爱好，但能尊重并支持对方的选择吗？",
-                    "你们喜欢的休闲方式（如运动、看电影、旅行）有重叠吗？",
-                    "你们喜欢的音乐、电影或书籍类型有相似之处吗？",
-                    "你们对美食的口味偏好和探索欲望相近吗？",
-                    "你们对旅行的方式（如自由行或跟团游）和目的地选择有共识吗？",
-                    "你们对居家活动（如做饭、游戏、看电视）的喜好程度相近吗？",
-                    "你们愿意尝试对方喜欢的活动，并从中找到乐趣吗？",
-                    "你们有定期一起参与兴趣活动的习惯吗？",
-                    "你们对社交活动的偏好（如热闹聚会或小型聚餐）相似吗？"
+                    "你和对方有至少1-2项共同的兴趣爱好（如看电影、运动、做饭），能一起参与享受吗？",
+                    "即使兴趣爱好不同，你们也会尊重对方的爱好（如不贬低对方喜欢的游戏、追星），不会干涉吗？",
+                    "你们愿意尝试了解并参与对方的兴趣爱好，增进彼此的共同话题和互动吗？"
                 ]
             }
         ];
 
-        // 生成背景爱心元素
-        function createBackgroundHearts() {
+        // 反向计分题列表 - 动态生成
+        let reverseQuestions = [];
+
+        // 情感专家评语系统
+        const expertComments = {
+            emotion: {
+                low: "你们的感情基础较为薄弱，存在明显的信任危机或情感连接不足。这可能源于沟通不畅、缺乏共同经历或对未来规划不一致。建议你们加强深度交流，建立更多共同回忆，并坦诚讨论对未来的期望。",
+                medium: "你们的感情基础尚可，但仍有提升空间。你们彼此信任但偶尔会有不安，能够沟通但不够深入。建议你们创造更多高质量的相处时间，学习更有效的沟通技巧，共同制定清晰的未来规划。",
+                high: "你们的感情基础非常牢固，彼此高度信任，情感连接紧密。你们能够坦诚沟通，共同面对挑战，对未来有清晰的共同规划。这是幸福婚姻的重要基石，请继续保持并深化这种情感连接。"
+            },
+            personality: {
+                low: "你们的性格存在明显冲突，可能在情绪表达、决策方式或生活习惯上难以协调。这种性格差异可能导致频繁争吵或情感疏离。建议你们学习理解彼此的性格特点，寻找互补的可能性，必要时寻求专业指导。",
+                medium: "你们的性格基本适配，但在某些方面仍需磨合。你们能够理解彼此但偶尔会有冲突，能够妥协但内心可能存有不满。建议你们加强沟通，学习冲突解决技巧，找到更和谐的相处模式。",
+                high: "你们的性格高度契合，无论是相似还是互补，都能形成良好的配合。你们能够理解并欣赏彼此的性格特点，相处融洽自然。这种性格默契是长期幸福关系的重要保障。"
+            },
+            lifestyle: {
+                low: "你们的生活习惯存在较大差异，可能在作息、饮食、卫生或消费观念上难以协调。这些日常摩擦如果得不到解决，会逐渐消耗感情。建议你们坦诚沟通各自的需求，制定双方都能接受的日常生活规则。",
+                medium: "你们的生活习惯基本协调，但某些方面仍需调整。你们能够包容彼此的差异，但偶尔会因生活习惯产生小摩擦。建议你们进一步协调生活节奏，建立更和谐的共同生活模式。",
+                high: "你们的生活习惯高度一致，日常相处融洽自然。无论是作息、饮食还是消费观念，你们都能够在尊重彼此的基础上找到平衡。这种生活默契将大大减少婚姻中的日常摩擦。"
+            },
+            self: {
+                low: "你们对彼此的自身条件存在明显不满意，可能在外貌、健康、品德或能力方面有所顾虑。这些因素如果得不到解决，会影响婚姻的稳定性。建议你们坦诚沟通，共同寻找提升和接纳的方法。",
+                medium: "你们对彼此的自身条件基本满意，但某些方面仍有改进空间。你们能够欣赏对方的优点，但对其缺点有所容忍。建议你们继续提升自我，同时学习更全面地接纳对方。",
+                high: "你们高度认可彼此的自身条件，无论是外在形象还是内在品质。你们互相欣赏，彼此尊重，这种认可和欣赏是健康婚姻关系的重要基础。"
+            },
+            education: {
+                low: "你们的认知水平存在较大差距，可能在价值观、思维方式或学习态度上难以共鸣。这种认知差异会影响深度交流和共同成长。建议你们加强知识交流，寻找共同的学习兴趣。",
+                medium: "你们的认知水平基本相当，能够进行有效交流，但在某些话题上可能存在理解差异。建议你们保持开放心态，尊重彼此的观点差异，共同拓展认知边界。",
+                high: "你们的认知水平高度契合，能够进行深度的思想交流和价值观共鸣。你们彼此欣赏对方的知识和见解，这种精神层面的契合是高质量婚姻的重要特征。"
+            },
+            career: {
+                low: "你们的事业发展存在明显冲突，可能在职业选择、工作强度或职业价值观上难以协调。这种冲突会影响家庭生活和情感连接。建议你们坦诚沟通职业规划，寻找双方都能接受的工作生活平衡点。",
+                medium: "你们的事业发展基本协调，但在某些方面仍需调整。你们能够支持彼此的职业发展，但偶尔会因工作影响家庭生活。建议你们进一步明确职业与家庭的边界，建立更有效的支持系统。",
+                high: "你们的事业发展高度协调，能够相互支持彼此的职业生涯，同时保持良好的工作生活平衡。你们理解并尊重彼此的职业价值，这种相互支持是稳定婚姻的重要保障。"
+            },
+            finance: {
+                low: "你们的经济观念存在根本性分歧，可能在收入、消费、储蓄或投资方面难以达成共识。这种财务冲突是婚姻破裂的常见原因。建议你们坦诚沟通财务状况，学习财务规划，建立共同的财务目标。",
+                medium: "你们的经济观念基本一致，但在某些具体问题上仍需协调。你们能够管理日常财务，但在大额支出或长期规划上可能存在分歧。建议你们制定清晰的财务计划，加强财务沟通。",
+                high: "你们的经济观念高度一致，能够共同制定和执行财务计划，有效管理家庭经济。你们对收入、消费和储蓄有共同的理解，这种财务共识为婚姻提供了坚实的物质基础。"
+            },
+            family: {
+                low: "你们的家庭关系存在明显挑战，可能在父母认可、亲戚相处或家庭边界上遇到困难。这些家庭因素会严重影响婚姻质量。建议你们学习处理家庭关系，明确小家庭边界，共同应对外部压力。",
+                medium: "你们的家庭关系基本和谐，但在某些方面仍需努力。你们能够得到家人的基本支持，但偶尔会遇到干涉或压力。建议你们加强夫妻同盟，学习更有效地处理家庭事务。",
+                high: "你们的家庭关系非常和谐，能够得到家人的充分支持和祝福。你们能够妥善处理家庭事务，保持健康的家庭边界，这种家庭支持系统是婚姻的坚强后盾。"
+            },
+            dreams: {
+                low: "你们的人生理想存在根本性差异，可能在生活目标、价值追求或未来规划上难以协调。这种理想冲突会影响婚姻的长期稳定性。建议你们深入交流人生理想，寻找共同的发展方向。",
+                medium: "你们的人生理想基本一致，但在具体实现方式上可能需要进一步协调。你们有共同的长期目标，但在实现路径上可能存在分歧。建议你们制定更清晰的共同计划，加强目标管理。",
+                high: "你们的人生理想高度一致，能够携手追求共同的目标和梦想。你们相互支持彼此的人生追求，共同规划未来，这种共同追求是长久幸福的重要动力。"
+            },
+            hobbies: {
+                low: "你们的兴趣爱好差异较大，缺乏共同的休闲活动和交流话题。这种差异可能导致情感疏离和生活单调。建议你们尝试了解彼此的兴趣，寻找新的共同爱好。",
+                medium: "你们的兴趣爱好有部分重叠，能够共享一些休闲时光，但仍需拓展共同兴趣。建议你们保持开放心态，尝试参与对方的爱好活动。",
+                high: "你们的兴趣相投，能够共享许多快乐时光，丰富彼此的日常生活。无论是共同爱好还是对彼此兴趣的尊重，都为你们的感情增添了更多色彩和连接。"
+            }
+        };
+
+        // 个性化建议库
+        const personalizedAdvice = {
+            emotion: {
+                excellent: [
+                    "继续保持每周至少2次的深度交流时间，分享内心感受和想法",
+                    "每月安排一次特别的约会活动，创造新的美好回忆",
+                    "定期回顾和更新你们的共同生活目标，确保方向一致",
+                    "尝试新的情感表达方式，如写情书或录制语音消息"
+                ],
+                good: [
+                    "每周安排固定的情感交流时间，确保彼此需求得到满足",
+                    "尝试新的共同活动，如一起学习新技能或参加兴趣班",
+                    "建立情感日记，记录每天对彼此的感激和欣赏",
+                    "定期回顾感情中的重要时刻，重温美好回忆"
+                ],
+                medium: [
+                    "每周安排至少1-2小时的专属交流时间，关闭手机专心对话",
+                    "学习有效沟通技巧，如'我感受'表达法和积极倾听",
+                    "共同制定短期和长期感情目标，明确发展方向",
+                    "尝试情感温度计，定期评估感情状态并及时调整"
+                ],
+                poor: [
+                    "每天安排15分钟专注交流时间，分享当天的感受和想法",
+                    "学习冲突解决技巧，避免冷战和指责性语言",
+                    "建立情感需求清单，明确彼此的核心情感需求",
+                    "寻求专业情感咨询，学习更有效的沟通方式"
+                ],
+                critical: [
+                    "立即寻求专业婚恋咨询师的帮助，解决根本性问题",
+                    "建立日常情感检查机制，及时发现和解决问题",
+                    "学习情感急救技巧，处理突发的情感危机",
+                    "考虑参加情感修复工作坊，系统学习关系维护技能"
+                ]
+            },
+            personality: {
+                excellent: [
+                    "继续保持对彼此性格特点的欣赏和理解",
+                    "定期交流性格互补带来的好处，强化积极认知",
+                    "尝试新的挑战性活动，测试性格配合的默契度",
+                    "学习更高级的性格分析工具，如MBTI或DISC"
+                ],
+                good: [
+                    "每月进行一次性格优势盘点，强化彼此的优点认知",
+                    "建立情绪表达规则，学习更有效地处理分歧",
+                    "尝试性格交换日，体验对方的思维和感受方式",
+                    "学习压力管理技巧，减少性格冲突的可能性"
+                ],
+                medium: [
+                    "每周进行性格兼容性练习，如角色扮演或情景模拟",
+                    "建立情绪表达规则，避免情绪化沟通",
+                    "学习性格互补技巧，发挥彼此的优势",
+                    "尝试情绪温度计，帮助彼此了解情绪状态"
+                ],
+                poor: [
+                    "每天进行10分钟的性格理解练习，学习接纳差异",
+                    "建立冲突预警机制，提前避免性格冲突",
+                    "学习情绪管理技巧，控制负面情绪的影响",
+                    "寻求专业性格咨询，理解根本性的性格差异"
+                ],
+                critical: [
+                    "立即寻求专业心理咨询，解决根本性性格冲突",
+                    "建立日常性格协调练习，逐步改善相处模式",
+                    "学习紧急冲突处理技巧，避免关系恶化",
+                    "考虑参加性格兼容性工作坊，系统学习相处之道"
+                ]
+            },
+            lifestyle: {
+                excellent: [
+                    "继续保持良好的生活习惯协调，定期检查是否需要微调",
+                    "尝试引入新的健康习惯，共同提升生活质量",
+                    "每季度评估生活节奏，确保仍然适合双方需求",
+                    "探索新的休闲活动，丰富共同生活体验"
+                ],
+                good: [
+                    "每月检查生活习惯协调情况，及时调整不适配的方面",
+                    "尝试适应对方的部分习惯，寻找双方都能接受的折中方案",
+                    "制定生活习惯调整计划，逐步改善微小差异",
+                    "建立生活习惯协调奖励机制，鼓励积极改变"
+                ],
+                medium: [
+                    "每周讨论生活习惯差异，寻找解决方案",
+                    "共同制定家务分工表，明确各自的责任",
+                    "尝试生活习惯交换周，体验对方的生活方式",
+                    "建立生活习惯协调目标，分阶段改善差异"
+                ],
+                poor: [
+                    "每天记录生活习惯冲突，分析根本原因",
+                    "制定详细的生活习惯调整计划，分步骤实施",
+                    "寻求生活教练帮助，学习更有效的生活协调技巧",
+                    "建立生活习惯协调监督机制，确保计划执行"
+                ],
+                critical: [
+                    "立即寻求专业生活协调咨询，解决根本性生活习惯冲突",
+                    "制定紧急生活习惯调整计划，避免日常摩擦升级",
+                    "学习生活习惯协调技巧，减少日常冲突",
+                    "考虑参加生活协调工作坊，系统学习共同生活技能"
+                ]
+            },
+            self: {
+                excellent: ["继续保持对彼此的欣赏和认可", "共同设定新的成长目标", "定期交流个人发展计划", "互相支持彼此的个人追求"],
+                good: ["每月进行一次优点盘点", "共同学习新技能", "设定个人成长目标", "互相提供成长反馈"],
+                medium: ["每周分享个人成长进展", "学习接纳彼此的不完美", "制定个人提升计划", "互相鼓励和支持"],
+                poor: ["每天发现对方的一个优点", "学习全面接纳对方", "制定个人成长计划", "寻求个人发展指导"],
+                critical: ["立即寻求个人发展咨询", "建立个人成长支持系统", "学习自我接纳技巧", "参加个人成长工作坊"]
+            },
+            education: {
+                excellent: ["继续保持知识交流", "共同探索新领域", "参加高端学术活动", "合作完成知识项目"],
+                good: ["每月进行知识分享", "共同阅读一本书", "参加讲座或研讨会", "讨论社会热点话题"],
+                medium: ["每周交流学习心得", "尊重彼此的观点差异", "寻找共同的学习兴趣", "尝试观点交换讨论"],
+                poor: ["每天分享一个新知识", "学习理解不同的思维方式", "制定知识共享计划", "寻求认知协调指导"],
+                critical: ["立即寻求认知协调咨询", "建立知识交流机制", "学习理解差异的技巧", "参加认知协调工作坊"]
+            },
+            career: {
+                excellent: ["继续互相支持职业发展", "共同规划职业路径", "参加职业发展活动", "合作完成职业项目"],
+                good: ["每月讨论职业进展", "互相提供职业建议", "平衡工作与家庭时间", "支持彼此的职业选择"],
+                medium: ["每周交流工作挑战", "明确工作家庭边界", "制定职业发展支持计划", "学习工作生活平衡技巧"],
+                poor: ["每天分享工作感受", "建立工作生活边界", "制定职业协调计划", "寻求职业发展指导"],
+                critical: ["立即寻求职业协调咨询", "建立工作生活平衡机制", "学习职业冲突解决技巧", "参加职业协调工作坊"]
+            },
+            finance: {
+                excellent: ["继续共同管理财务", "制定长期财务规划", "探索新的投资机会", "定期评估财务目标"],
+                good: ["每月进行财务回顾", "共同制定消费计划", "学习新的理财知识", "建立财务透明机制"],
+                medium: ["每周讨论财务状况", "制定共同的财务目标", "学习财务规划技巧", "建立财务沟通机制"],
+                poor: ["每天记录消费情况", "制定财务改善计划", "学习基础理财知识", "寻求财务规划指导"],
+                critical: ["立即寻求财务咨询", "建立紧急财务计划", "学习债务管理技巧", "参加财务管理工作坊"]
+            },
+            family: {
+                excellent: ["继续保持良好的家庭关系", "定期与家人保持联系", "组织家庭活动", "协调双方家庭需求"],
+                good: ["每月与家人交流", "平衡双方家庭时间", "学习处理家庭关系", "建立家庭沟通机制"],
+                medium: ["每周与家人联系", "明确小家庭边界", "制定家庭关系改善计划", "学习家庭协调技巧"],
+                poor: ["每天与家人简短交流", "建立家庭关系改善目标", "学习边界设定技巧", "寻求家庭关系指导"],
+                critical: ["立即寻求家庭关系咨询", "建立家庭危机处理机制", "学习紧急家庭协调技巧", "参加家庭关系工作坊"]
+            },
+            dreams: {
+                excellent: ["继续共同追求梦想", "定期回顾和调整目标", "互相支持个人追求", "合作实现共同理想"],
+                good: ["每月讨论梦想进展", "互相支持个人目标", "平衡个人与共同理想", "制定梦想实现计划"],
+                medium: ["每周分享梦想进展", "寻找共同的发展方向", "制定梦想实现路径", "学习目标管理技巧"],
+                poor: ["每天思考梦想方向", "建立梦想实现计划", "学习目标设定技巧", "寻求梦想指导"],
+                critical: ["立即寻求人生规划咨询", "建立梦想协调机制", "学习目标管理技巧", "参加人生规划工作坊"]
+            },
+            hobbies: {
+                excellent: ["继续探索共同兴趣", "尝试新的休闲活动", "互相支持个人爱好", "丰富共同生活体验"],
+                good: ["每月尝试新活动", "平衡个人与共同兴趣", "互相介绍各自爱好", "寻找新的共同兴趣"],
+                medium: ["每周分享兴趣爱好", "尝试参与对方爱好", "寻找共同兴趣点", "学习兴趣协调技巧"],
+                poor: ["每天了解对方兴趣", "建立兴趣探索计划", "学习尊重差异的技巧", "寻求兴趣协调指导"],
+                critical: ["立即寻求兴趣协调咨询", "建立兴趣共享机制", "学习兴趣融合技巧", "参加兴趣协调工作坊"]
+            }
+        };
+
+        // 激励性语言库
+        const motivationalMessages = [
+            "太棒了！您已经完成了这个维度的探索，离更了解彼此又近了一步！",
+            "恭喜您完成这个维度的测试！每一份真诚的回答都在为你们的未来添砖加瓦！",
+            "了不起！您已经完成了这个维度的评估，相信这些思考会让你们的关系更加稳固！",
+            "真棒！这个维度的完成意味着你们对彼此的理解又加深了一层！",
+            "恭喜！您已经成功完成了这个维度的探索，这些宝贵的思考将成为你们关系的基石！",
+            "太出色了！这个维度的完成展现了您对关系的认真态度，继续前进吧！",
+            "真厉害！您已经完成了这个维度的评估，每一题的回答都是对未来的投资！",
+            "恭喜您！这个维度的完成意味着你们离幸福婚姻又近了一步！",
+            "太棒了！您已经完成了这个维度的探索，这些思考会让你们的关系更加美好！",
+            "了不起！这个维度的完成展现了您对关系的重视，继续加油！"
+        ];
+
+        // 总体评价模板
+        const overallComments = {
+            excellent: {
+                title: "高度契合的伴侣关系",
+                content: "你们的婚姻适配度非常高！在绝大多数关键维度上都表现出色，彼此高度契合。你们拥有坚实的感情基础、和谐的性格配合、一致的生活理念和共同的人生目标。这种全方位的适配为幸福婚姻奠定了坚实基础，你们是理想的婚姻伴侣。"
+            },
+            good: {
+                title: "良好的伴侣关系基础",
+                content: "你们的婚姻适配度良好！在大多数重要维度上都有较好的表现，婚姻生活的基础稳固。虽然在某些方面仍需进一步磨合，但整体而言，你们具备建立幸福婚姻的良好条件。只要继续保持沟通和相互理解，你们的婚姻前景非常乐观。"
+            },
+            medium: {
+                title: "中等适配的伴侣关系",
+                content: "你们的婚姻适配度中等。在某些核心维度上表现良好，但也存在一些需要认真对待的差异。这些差异虽然不会立即威胁婚姻，但如果得不到妥善处理，可能会在长期相处中产生摩擦。建议你们重点关注未达标的维度，共同努力改善。"
+            },
+            poor: {
+                title: "需要认真考虑的伴侣关系",
+                content: "你们的婚姻适配度有待提高。在多个重要维度上存在明显差异，这些差异可能会对未来的婚姻生活构成挑战。建议你们深入沟通，坦诚面对存在的问题，认真考虑这些差异是否会影响长期的婚姻幸福。必要时可寻求专业婚恋咨询师的帮助。"
+            },
+            critical: {
+                title: "需要慎重考虑的伴侣关系",
+                content: "你们的婚姻适配度较低。在多个关键维度上存在根本性分歧，这些分歧可能会严重影响到婚姻的质量和稳定性。建议你们慎重考虑婚姻决定，认真评估这些差异的严重性。如果决定继续关系，强烈建议寻求专业婚恋咨询师的指导。"
+            }
+        };
+
+        // 生成随机气球
+        function createBalloons() {
             const container = document.getElementById('backgroundElements');
             const colors = ['red', 'pink', 'purple', 'blue', 'yellow'];
-            const heartCount = 20;
             
-            for (let i = 0; i < heartCount; i++) {
-                const heart = document.createElement('div');
-                heart.className = `balloon heart`;
-                
+            for (let i = 0; i < 25; i++) {
+                const balloon = document.createElement('div');
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                const colorHex = getColorHex(color);
-                heart.style.backgroundImage = `url(${createHeartSVG(colorHex)})`;
                 
-                // 随机位置和大小
-                heart.style.left = `${Math.random() * 100}%`;
-                heart.style.top = `${Math.random() * 100}%`;
-                heart.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
-                heart.style.animationDelay = `${Math.random() * 5}s`;
-                heart.style.animationDuration = `${10 + Math.random() * 20}s`;
+                balloon.className = `balloon heart ${color}`;
+                balloon.style.left = `${Math.random() * 100}%`;
+                balloon.style.top = `${Math.random() * 100}%`;
+                balloon.style.animationDelay = `${Math.random() * 15}s`;
+                balloon.style.animationDuration = `${10 + Math.random() * 20}s`;
                 
-                container.appendChild(heart);
+                balloon.style.backgroundImage = `url("${createHeartSVG(getColorHex(color))}")`;
+                
+                container.appendChild(balloon);
             }
+        }
+        
+        // 创建背景装饰元素
+        function createBackgroundElements() {
+            createBalloons();
         }
 
         // 生成测试题目
-        function generateQuestions() {
+        function generateTestQuestions() {
             const form = document.getElementById('compatibilityTest');
-            let questionNumber = 1;
+            form.innerHTML = '';
+            let questionCount = 0;
             
-            dimensions.forEach(dimension => {
+            reverseQuestions = [];
+            
+            dimensions.forEach((dimension, dimIndex) => {
                 const dimensionDiv = document.createElement('div');
                 dimensionDiv.className = 'dimension';
-                dimensionDiv.id = `dimension-${dimension.id}`;
+                dimensionDiv.id = `${dimension.id}-dimension`;
                 
-                const dimensionHeader = document.createElement('h2');
-                dimensionHeader.textContent = `${dimension.name}（${getQuestionRange(dimension.id)}题）`;
-                dimensionDiv.appendChild(dimensionHeader);
+                const completedQuestions = getCompletedQuestionsCount();
+                const remainingQuestions = 100 - completedQuestions;
                 
-                const dimensionDesc = document.createElement('p');
-                dimensionDesc.textContent = getDimensionDescription(dimension.id);
-                dimensionDesc.style.marginBottom = '15px';
-                dimensionDesc.style.fontStyle = 'italic';
-                dimensionDiv.appendChild(dimensionDesc);
+                const title = document.createElement('h2');
+                title.innerHTML = `❤️ ${dimension.name}维度（${dimIndex + 1}/10 | 已完成：${completedQuestions}题 | 剩余：${remainingQuestions}题）`;
+                dimensionDiv.appendChild(title);
+                
+                const description = document.createElement('p');
+                description.innerHTML = `<strong>本维度核心评估：</strong>${getDimensionDescription(dimension.id)}`;
+                dimensionDiv.appendChild(description);
                 
                 const progressInfo = document.createElement('div');
                 progressInfo.className = 'progress-info';
-                progressInfo.innerHTML = `本维度共${dimension.questions}题，每题5分，满分${dimension.questions * 5}分，建议得分不低于${dimension.passScore}分`;
+                progressInfo.textContent = `共${dimension.questions}题，达标线≥${dimension.passScore}分`;
                 dimensionDiv.appendChild(progressInfo);
                 
-                dimension.questionsText.forEach((questionText, index) => {
-                    const isReverse = questionText.includes('（反）');
-                    const cleanedQuestionText = questionText.replace('（反）', '');
+                for (let i = 0; i < dimension.questions; i++) {
+                    questionCount++;
                     
                     const questionDiv = document.createElement('div');
-                    questionDiv.className = 'question unanswered';
-                    questionDiv.id = `question-${dimension.id}-${index + 1}`;
+                    questionDiv.className = 'question';
+                    questionDiv.id = `question-${dimension.id}-${i+1}`;
                     
-                    const questionLabel = document.createElement('p');
-                    questionLabel.innerHTML = `<strong>${questionNumber}.</strong> ${cleanedQuestionText}${isReverse ? ' <span style="color: #dc3545;">(反向计分)</span>' : ''}`;
-                    questionDiv.appendChild(questionLabel);
+                    const questionText = document.createElement('p');
+                    questionText.innerHTML = `<strong>${questionCount}.</strong> ${dimension.questionsText[i]}`;
+                    questionDiv.appendChild(questionText);
                     
-                    const unansweredMarker = document.createElement('div');
-                    unansweredMarker.className = 'unanswered-marker';
-                    unansweredMarker.textContent = '未答';
-                    questionDiv.appendChild(unansweredMarker);
+                    if (dimension.questionsText[i].includes('（反）')) {
+                        reverseQuestions.push(`${dimension.id}-${i+1}`);
+                    }
                     
                     const optionsDiv = document.createElement('div');
                     optionsDiv.className = 'options';
                     
-                    const options = ['是', '基本是', '不确定', '基本否', '否'];
-                    options.forEach(option => {
+                    const isSpecialReverse = (questionCount === 34 || questionCount === 62);
+                    
+                    const optionValues = isSpecialReverse ? [
+                        { text: "是", value: 1, displayScore: 1 },
+                        { text: "基本是", value: 2, displayScore: 2 },
+                        { text: "不确定", value: 3, displayScore: 3 },
+                        { text: "基本否", value: 4, displayScore: 4 },
+                        { text: "否", value: 5, displayScore: 5 }
+                    ] : [
+                        { text: "是", value: 5, displayScore: 5 },
+                        { text: "基本是", value: 4, displayScore: 4 },
+                        { text: "不确定", value: 3, displayScore: 3 },
+                        { text: "基本否", value: 2, displayScore: 2 },
+                        { text: "否", value: 1, displayScore: 1 }
+                    ];
+                    
+                    optionValues.forEach(option => {
                         const optionDiv = document.createElement('div');
                         optionDiv.className = 'option';
                         
                         const input = document.createElement('input');
                         input.type = 'radio';
-                        input.name = `${dimension.id}-${index + 1}`;
-                        input.value = option;
-                        input.dataset.reverse = isReverse ? 'true' : 'false';
+                        input.name = `${dimension.id}-${i+1}`;
+                        input.value = option.value;
+                        input.id = `${dimension.id}-${i+1}-${option.value}`;
+                        
+                        const savedAnswer = localStorage.getItem(`${dimension.id}-${i+1}`);
+                        if (savedAnswer && savedAnswer === option.value) {
+                            input.checked = true;
+                        }
                         
                         input.addEventListener('change', function() {
-                            updateQuestionStatus(questionDiv, true);
-                            updateSubmitButtonStatus();
+                            localStorage.setItem(`${dimension.id}-${i+1}`, this.value);
+                            updateProgress();
+                            updateDimensionScore(dimension.id);
+                            checkAllQuestionsAnswered();
                             updateQuestionNavigation();
                         });
                         
                         const label = document.createElement('label');
-                        label.textContent = option;
+                        label.htmlFor = `${dimension.id}-${i+1}-${option.value}`;
+                        label.textContent = `${option.text}（${option.displayScore}分）`;
                         
                         optionDiv.appendChild(input);
                         optionDiv.appendChild(label);
@@ -1343,810 +1618,1156 @@
                     
                     questionDiv.appendChild(optionsDiv);
                     dimensionDiv.appendChild(questionDiv);
-                    
-                    questionNumber++;
-                });
+                }
+                
+                const scoreDisplay = document.createElement('div');
+                scoreDisplay.className = 'dimension-score';
+                scoreDisplay.id = `${dimension.id}-score`;
+                scoreDisplay.innerHTML = `本维度得分：<span id="${dimension.id}-score-value">0</span>`;
+                dimensionDiv.appendChild(scoreDisplay);
+                
+                const footer = document.createElement('div');
+                footer.className = 'dimension-footer';
+                footer.textContent = motivationalMessages[dimIndex % motivationalMessages.length];
+                dimensionDiv.appendChild(footer);
                 
                 form.appendChild(dimensionDiv);
             });
-        }
-
-        // 更新问题状态（已答/未答）
-        function updateQuestionStatus(questionElement, isAnswered) {
-            if (isAnswered) {
-                questionElement.classList.remove('unanswered');
-                const marker = questionElement.querySelector('.unanswered-marker');
-                if (marker) marker.style.display = 'none';
-            } else {
-                questionElement.classList.add('unanswered');
-                const marker = questionElement.querySelector('.unanswered-marker');
-                if (marker) marker.style.display = 'block';
-            }
-        }
-
-        // 更新提交按钮状态
-        function updateSubmitButtonStatus() {
-            const totalQuestions = dimensions.reduce((total, dim) => total + dim.questions, 0);
-            const answeredQuestions = getCompletedQuestionsCount();
-            const submitButton = document.getElementById('calculateResults');
             
-            if (answeredQuestions === totalQuestions) {
-                submitButton.disabled = false;
-                document.getElementById('warningMessage').style.display = 'none';
-            } else {
-                submitButton.disabled = true;
-            }
+            dimensions.forEach(dimension => {
+                updateDimensionScore(dimension.id);
+            });
+            
+            checkAllQuestionsAnswered();
+            generateQuestionNavigation();
         }
-
+        
         // 生成问题导航
         function generateQuestionNavigation() {
-            const navContainer = document.getElementById('questionNavigation');
-            navContainer.innerHTML = '';
+            const nav = document.getElementById('questionNavigation');
+            nav.innerHTML = '';
             
             dimensions.forEach(dimension => {
-                const navDimension = document.createElement('div');
-                navDimension.className = 'nav-dimension';
+                const dimensionDiv = document.createElement('div');
+                dimensionDiv.className = 'nav-dimension';
                 
-                const dimensionTitle = document.createElement('div');
-                dimensionTitle.className = 'nav-dimension-title';
-                dimensionTitle.textContent = dimension.name;
-                dimensionTitle.addEventListener('click', () => {
-                    document.getElementById(`dimension-${dimension.id}`).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                const title = document.createElement('div');
+                title.className = 'nav-dimension-title';
+                title.textContent = dimension.name;
+                title.addEventListener('click', function() {
+                    document.getElementById(`${dimension.id}-dimension`).scrollIntoView({ behavior: 'smooth' });
                 });
-                navDimension.appendChild(dimensionTitle);
+                dimensionDiv.appendChild(title);
                 
-                const questionsContainer = document.createElement('div');
-                questionsContainer.className = 'nav-questions';
+                const questionsDiv = document.createElement('div');
+                questionsDiv.className = 'nav-questions';
                 
                 for (let i = 1; i <= dimension.questions; i++) {
-                    const questionNav = document.createElement('div');
-                    questionNav.className = 'nav-question';
-                    questionNav.textContent = i;
-                    questionNav.dataset.dimension = dimension.id;
-                    questionNav.dataset.number = i;
+                    const question = document.createElement('div');
+                    question.className = 'nav-question';
+                    question.textContent = i;
+                    question.dataset.dimension = dimension.id;
+                    question.dataset.question = i;
                     
-                    questionNav.addEventListener('click', () => {
-                        document.getElementById(`question-${dimension.id}-${i}`).scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                        
-                        // 高亮当前问题
-                        document.querySelectorAll('.nav-question').forEach(el => {
-                            el.classList.remove('current');
-                        });
-                        questionNav.classList.add('current');
+                    const selectedOption = document.querySelector(`input[name="${dimension.id}-${i}"]:checked`);
+                    if (selectedOption) {
+                        question.classList.add('answered');
+                    }
+                    
+                    question.addEventListener('click', function() {
+                        const targetId = `question-${dimension.id}-${i}`;
+                        document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
                     });
                     
-                    questionsContainer.appendChild(questionNav);
+                    questionsDiv.appendChild(question);
                 }
                 
-                navDimension.appendChild(questionsContainer);
-                navContainer.appendChild(navDimension);
+                dimensionDiv.appendChild(questionsDiv);
+                nav.appendChild(dimensionDiv);
             });
-            
-            updateQuestionNavigation();
         }
-
+        
         // 更新问题导航状态
         function updateQuestionNavigation() {
-            dimensions.forEach(dimension => {
-                for (let i = 1; i <= dimension.questions; i++) {
-                    const questionName = `${dimension.id}-${i}`;
-                    const isAnswered = document.querySelector(`input[name="${questionName}"]:checked`) !== null;
-                    
-                    const navItem = document.querySelector(`.nav-question[data-dimension="${dimension.id}"][data-number="${i}"]`);
-                    if (navItem) {
-                        if (isAnswered) {
-                            navItem.classList.add('answered');
-                        } else {
-                            navItem.classList.remove('answered');
-                        }
-                    }
-                }
-            });
-        }
-
-        // 计算测试结果
-        function calculateResults() {
-            const results = {};
-            let totalScore = 0;
-            
-            dimensions.forEach(dimension => {
-                let dimensionScore = 0;
-                const totalDimensionPoints = dimension.questions * 5;
+            const navQuestions = document.querySelectorAll('.nav-question');
+            navQuestions.forEach(navQuestion => {
+                const dimension = navQuestion.dataset.dimension;
+                const question = navQuestion.dataset.question;
+                const selectedOption = document.querySelector(`input[name="${dimension}-${question}"]:checked`);
                 
-                for (let i = 1; i <= dimension.questions; i++) {
-                    const questionName = `${dimension.id}-${i}`;
-                    const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
-                    const isReverse = selectedOption && selectedOption.dataset.reverse === 'true';
-                    
-                    if (selectedOption) {
-                        let points = 0;
-                        switch (selectedOption.value) {
-                            case '是': points = isReverse ? 1 : 5; break;
-                            case '基本是': points = isReverse ? 2 : 4; break;
-                            case '不确定': points = 3; break;
-                            case '基本否': points = isReverse ? 4 : 2; break;
-                            case '否': points = isReverse ? 5 : 1; break;
-                        }
-                        dimensionScore += points;
-                    }
-                }
-                
-                results[dimension.id] = {
-                    name: dimension.name,
-                    score: dimensionScore,
-                    maxScore: totalDimensionPoints,
-                    passScore: dimension.passScore,
-                    percentage: Math.round((dimensionScore / totalDimensionPoints) * 100)
-                };
-                
-                totalScore += dimensionScore;
-            });
-            
-            return {
-                dimensions: results,
-                totalScore: totalScore,
-                maxTotalScore: dimensions.reduce((total, dim) => total + dim.questions * 5, 0)
-            };
-        }
-
-        // 显示测试结果
-        function displayResults(results) {
-            // 显示结果区域
-            document.getElementById('resultsSection').style.display = 'block';
-            
-            // 滚动到结果区域
-            document.getElementById('resultsSection').scrollIntoView({
-                behavior: 'smooth'
-            });
-            
-            // 更新总分
-            document.getElementById('totalScoreCell').innerHTML = `<strong>${results.totalScore}</strong> 分 / ${results.maxTotalScore} 分`;
-            
-            // 清空表格
-            const tableBody = document.getElementById('resultsTableBody');
-            tableBody.innerHTML = '';
-            
-            // 填充表格数据
-            Object.values(results.dimensions).forEach(dimension => {
-                const row = document.createElement('tr');
-                
-                // 维度名称
-                const nameCell = document.createElement('td');
-                nameCell.textContent = dimension.name;
-                row.appendChild(nameCell);
-                
-                // 题目编号
-                const rangeCell = document.createElement('td');
-                rangeCell.textContent = getQuestionRange(dimension.id);
-                row.appendChild(rangeCell);
-                
-                // 维度得分
-                const scoreCell = document.createElement('td');
-                scoreCell.textContent = `${dimension.score} 分`;
-                row.appendChild(scoreCell);
-                
-                // 满分
-                const maxScoreCell = document.createElement('td');
-                maxScoreCell.textContent = `${dimension.maxScore} 分`;
-                row.appendChild(maxScoreCell);
-                
-                // 评价等级
-                const ratingCell = document.createElement('td');
-                let ratingClass, ratingText;
-                
-                if (dimension.percentage >= 90) {
-                    ratingClass = 'rating-excellent';
-                    ratingText = '闭眼冲';
-                } else if (dimension.percentage >= 80) {
-                    ratingClass = 'rating-good';
-                    ratingText = '优秀';
-                } else if (dimension.percentage >= 70) {
-                    ratingClass = 'rating-medium';
-                    ratingText = '达标';
-                } else if (dimension.percentage >= 60) {
-                    ratingClass = 'rating-poor';
-                    ratingText = '待提升';
-                } else {
-                    ratingClass = 'rating-critical';
-                    ratingText = '慎重';
-                }
-                
-                ratingCell.innerHTML = `<span class="${ratingClass}">${ratingText} (${dimension.percentage}%)</span>`;
-                row.appendChild(ratingCell);
-                
-                tableBody.appendChild(row);
-            });
-            
-            // 生成评语
-            generateCommentary(results);
-            
-            // 生成个性化建议
-            generatePersonalizedAdvice(results);
-            
-            // 创建图表
-            createCharts(results);
-        }
-
-        // 生成评语
-        function generateCommentary(results) {
-            const commentaryElement = document.getElementById('commentary');
-            const totalPercentage = Math.round((results.totalScore / results.maxTotalScore) * 100);
-            
-            let mainCommentary = '';
-            
-            if (totalPercentage >= 90) {
-                mainCommentary = `<h3>恭喜！你们的结婚适配度极高（${totalPercentage}%）</h3>
-                <p>你们在各个维度的表现都非常出色，情感基础稳固，性格、生活习惯、价值观高度契合。这表明你们已经具备了建立幸福婚姻的坚实基础，是非常理想的伴侣组合。</p>
-                <p>你们对彼此有深刻的理解和接纳，在面对生活挑战时能够同心协力。这样的关系质量令人羡慕，建议可以积极推进婚姻计划。</p>`;
-            } else if (totalPercentage >= 80) {
-                mainCommentary = `<h3>优秀！你们的结婚适配度良好（${totalPercentage}%）</h3>
-                <p>你们的关系整体状况优秀，在大多数关键维度上都表现良好。彼此的契合度较高，具备建立稳定婚姻的条件。</p>
-                <p>虽然在某些方面可能存在小的差异，但这并不影响整体关系质量。只要继续保持良好的沟通和互相理解，婚姻生活会很幸福。</p>`;
-            } else if (totalPercentage >= 70) {
-                mainCommentary = `<h3>不错！你们的结婚适配度达标（${totalPercentage}%）</h3>
-                <p>你们的关系基本达到婚姻所需的适配度，但存在一些需要关注的方面。总体而言，你们有较好的基础，但需要在某些领域加强沟通和理解。</p>
-                <p>建议在婚前针对得分较低的维度进行深入交流，达成更多共识，为婚姻生活做好更充分的准备。</p>`;
-            } else if (totalPercentage >= 60) {
-                mainCommentary = `<h3>注意：你们的结婚适配度有待提升（${totalPercentage}%）</h3>
-                <p>你们的关系在多个关键维度上存在明显差异，需要认真对待。这些差异如果得不到妥善处理，可能会成为婚姻中的隐患。</p>
-                <p>建议推迟结婚计划，先针对得分较低的维度进行深入沟通和调整，必要时可以寻求专业婚恋咨询的帮助，看看是否能够达成更多共识。</p>`;
-            } else {
-                mainCommentary = `<h3>慎重：你们的结婚适配度较低（${totalPercentage}%）</h3>
-                <p>你们在多个核心维度上存在较大分歧，目前的状态可能不太适合进入婚姻。这些深层次的差异可能会在婚姻中引发持续的冲突。</p>
-                <p>建议认真思考你们是否真的适合彼此，是否有信心和能力解决这些根本性的分歧。在做出结婚决定前，强烈建议进行专业的婚恋咨询。</p>`;
-            }
-            
-            // 找出最高分和最低分的维度
-            const dimensionScores = Object.values(results.dimensions);
-            const bestDimension = dimensionScores.reduce((best, current) => 
-                current.percentage > best.percentage ? current : best, dimensionScores[0]);
-            const worstDimension = dimensionScores.reduce((worst, current) => 
-                current.percentage < worst.percentage ? current : worst, dimensionScores[0]);
-            
-            const additionalCommentary = `<p><strong>你们的优势领域：</strong>${bestDimension.name}（${bestDimension.percentage}%）- 这是你们关系中最稳固的部分，继续保持。</p>
-            <p><strong>需要关注的领域：</strong>${worstDimension.name}（${worstDimension.percentage}%）- 这是你们关系中最薄弱的环节，建议重点改善。</p>`;
-            
-            commentaryElement.innerHTML = mainCommentary + additionalCommentary;
-        }
-
-        // 生成个性化建议
-        function generatePersonalizedAdvice(results) {
-            const adviceElement = document.getElementById('personalizedAdvice');
-            
-            // 找出得分最低的三个维度
-            const dimensionScores = Object.values(results.dimensions);
-            const sortedDimensions = [...dimensionScores].sort((a, b) => a.percentage - b.percentage);
-            const lowestDimensions = sortedDimensions.slice(0, 3);
-            
-            // 针对不同维度的建议
-            const adviceMap = {
-                emotion: "1. 增加每日高质量沟通时间，分享彼此的感受和想法\n2. 定期安排浪漫约会，重温初识时的美好\n3. 学习更有效的冲突解决技巧，避免指责和冷战\n4. 共同创造专属你们的仪式感和传统",
-                personality: "1. 深入了解并接纳对方的性格特质，而非试图改变\n2. 学习利用性格互补性，而非让差异成为冲突点\n3. 理解对方表达爱意的方式可能与你不同\n4. 共同制定处理情绪和压力的策略",
-                lifestyle: "1. 找出生活习惯中的冲突点，制定双方都能接受的妥协方案\n2. 共同参与家务，建立公平的分工模式\n3. 尊重对方的生活节奏，寻找平衡点\n4. 一起培养新的健康生活习惯",
-                self: "1. 增强自我认知，明确自己在关系中的需求和边界\n2. 保持适当的独立性，同时培养共同成长的意识\n3. 学习自我调节情绪，避免过度依赖对方\n4. 接受自己和对方的不完美，减少评判",
-                education: "1. 增加深度交流的机会，了解彼此的核心价值观\n2. 尊重观念差异，寻找共同点和折中方案\n3. 共同学习新事物，拓展认知边界\n4. 讨论并明确对婚姻、家庭的核心期待",
-                career: "1. 深入交流职业规划和目标，寻找互相支持的方式\n2. 建立健康的工作-生活平衡观念\n3. 讨论并规划家庭与事业的优先级\n4. 支持对方的职业发展，共同庆祝职业成就",
-                finance: "1. 坦诚交流对金钱的看法和习惯\n2. 制定共同的财务目标和预算计划\n3. 明确财务决策的方式和责任分工\n4. 学习理财知识，共同管理家庭财务",
-                family: "1. 与双方家庭建立健康的边界\n2. 共同制定处理家庭关系的原则和策略\n3. 深入讨论对子女教育和养育的看法\n4. 提前规划如何平衡小家庭与原生家庭的关系",
-                dreams: "1. 分享并倾听彼此的人生愿景和梦想\n2. 寻找个人目标与共同目标的结合点\n3. 制定短期和长期的共同计划\n4. 定期回顾和调整你们的人生规划",
-                hobbies: "1. 尝试参与并了解对方的兴趣爱好\n2. 每周安排一次共同参与的活动\n3. 尊重并支持对方的个人兴趣\n4. 一起探索和培养新的共同爱好"
-            };
-            
-            let adviceHTML = `<h4>针对你们关系的个性化建议</h4><ul>`;
-            
-            lowestDimensions.forEach(dimension => {
-                const dimensionId = Object.keys(results.dimensions).find(key => results.dimensions[key].name === dimension.name);
-                const advice = adviceMap[dimensionId] || "1. 增加沟通，深入了解彼此的想法和需求\n2. 寻找共同的解决方案，而非坚持己见\n3. 定期回顾关系进展，及时调整";
-                
-                adviceHTML += `<li><strong>${dimension.name}：</strong>
-                    <ul style="margin-top: 5px;">
-                        ${advice.split('\n').map(point => `<li>${point}</li>`).join('')}
-                    </ul>
-                </li>`;
-            });
-            
-            adviceHTML += `</ul><p style="margin-top: 15px;"><strong>通用建议：</strong>无论得分如何，婚姻的成功都需要双方持续的努力和投入。定期沟通、互相尊重、共同成长是维持幸福婚姻的关键。建议每3-6个月重新评估一次你们的关系状况，及时解决出现的问题。</p>`;
-            
-            adviceElement.innerHTML = adviceHTML;
-        }
-
-        // 创建图表
-        function createCharts(results) {
-            const dimensionData = Object.values(results.dimensions);
-            const labels = dimensionData.map(d => d.name);
-            const scores = dimensionData.map(d => d.percentage);
-            const backgroundColors = [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)'
-            ];
-            const borderColors = [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
-            ];
-            
-            // 销毁现有图表（如果存在）
-            if (window.radarChart) {
-                window.radarChart.destroy();
-            }
-            if (window.barChart) {
-                window.barChart.destroy();
-            }
-            
-            // 创建雷达图
-            const radarCtx = document.getElementById('radarChart').getContext('2d');
-            window.radarChart = new Chart(radarCtx, {
-                type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '适配度百分比',
-                        data: scores,
-                        backgroundColor: 'rgba(255, 107, 157, 0.2)',
-                        borderColor: 'rgba(255, 107, 157, 1)',
-                        pointBackgroundColor: 'rgba(255, 107, 157, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(255, 107, 157, 1)'
-                    }]
-                },
-                options: {
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                stepSize: 20
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // 创建柱状图
-            const barCtx = document.getElementById('barChart').getContext('2d');
-            window.barChart = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '适配度百分比',
-                        data: scores,
-                        backgroundColor: backgroundColors,
-                        borderColor: borderColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: '适配度百分比'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 导出为图片
-        function exportAsImage() {
-            const resultsSection = document.getElementById('resultsSection');
-            
-            html2canvas(resultsSection).then(canvas => {
-                const link = document.createElement('a');
-                link.download = '结婚适配度测试结果.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        // 导出为PDF
-        function exportAsPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const resultsSection = document.getElementById('resultsSection');
-            
-            html2canvas(resultsSection).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = 210; // A4宽度(mm)
-                const imgHeight = canvas.height * imgWidth / canvas.width;
-                
-                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                doc.save('结婚适配度测试结果.pdf');
-            });
-        }
-
-        // 保存答题进度
-        function saveProgress() {
-            const answers = {};
-            
-            // 保存普通题答案
-            dimensions.forEach(dimension => {
-                for (let i = 1; i <= dimension.questions; i++) {
-                    const questionName = `${dimension.id}-${i}`;
-                    const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
-                    if (selectedOption) {
-                        answers[questionName] = selectedOption.value;
-                    }
-                }
-            });
-            
-            // 保存特殊题答案
-            for (let i = 1; i <= 3; i++) {
-                const questionName = `special${i}`;
-                const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
                 if (selectedOption) {
-                    answers[questionName] = selectedOption.value;
+                    navQuestion.classList.add('answered');
+                } else {
+                    navQuestion.classList.remove('answered');
                 }
-            }
-            
-            localStorage.setItem('testProgress', JSON.stringify(answers));
-            alert('答题进度已保存！');
+            });
         }
-
-        // 加载答题进度
-        function loadProgress() {
-            const savedAnswers = JSON.parse(localStorage.getItem('testProgress'));
+        
+        // 检查所有题目是否已回答
+        function checkAllQuestionsAnswered() {
+            const totalQuestions = 100;
+            const answeredQuestions = getCompletedQuestionsCount();
+            const unansweredCount = totalQuestions - answeredQuestions;
+            const submitBtn = document.getElementById('calculateResults');
+            const warningMessage = document.getElementById('warningMessage');
+            const unansweredCountElement = document.getElementById('unansweredCount');
             
-            if (!savedAnswers || Object.keys(savedAnswers).length === 0) {
-                alert('没有找到保存的答题进度！');
-                return;
-            }
+            unansweredCountElement.textContent = unansweredCount;
             
-            // 加载普通题答案
-            Object.keys(savedAnswers).forEach(questionName => {
-                if (questionName.startsWith('special')) return;
-                
-                const inputElement = document.querySelector(`input[name="${questionName}"][value="${savedAnswers[questionName]}"]`);
-                if (inputElement) {
-                    inputElement.checked = true;
+            dimensions.forEach(dimension => {
+                for (let i = 1; i <= dimension.questions; i++) {
+                    const questionElement = document.getElementById(`question-${dimension.id}-${i}`);
+                    const selectedOption = document.querySelector(`input[name="${dimension.id}-${i}"]:checked`);
                     
-                    // 更新问题状态
-                    const [dimensionId, questionNum] = questionName.split('-');
-                    const questionElement = document.getElementById(`question-${dimensionId}-${questionNum}`);
                     if (questionElement) {
-                        updateQuestionStatus(questionElement, true);
+                        if (selectedOption) {
+                            questionElement.classList.remove('unanswered');
+                            const existingMarker = questionElement.querySelector('.unanswered-marker');
+                            if (existingMarker) {
+                                existingMarker.remove();
+                            }
+                        } else {
+                            questionElement.classList.add('unanswered');
+                            if (!questionElement.querySelector('.unanswered-marker')) {
+                                const marker = document.createElement('div');
+                                marker.className = 'unanswered-marker';
+                                marker.textContent = '未答';
+                                questionElement.appendChild(marker);
+                            }
+                        }
                     }
                 }
             });
             
-            // 加载特殊题答案
-            for (let i = 1; i <= 3; i++) {
-                const questionName = `special${i}`;
-                if (savedAnswers[questionName]) {
-                    const inputElement = document.querySelector(`input[name="${questionName}"][value="${savedAnswers[questionName]}"]`);
-                    if (inputElement) {
-                        inputElement.checked = true;
-                    }
-                }
-            }
-            
-            updateSubmitButtonStatus();
-            updateQuestionNavigation();
-            alert('答题进度已加载！');
-        }
-
-        // 清除答题进度
-        function clearProgress() {
-            if (confirm('确定要清除所有答题进度吗？此操作不可恢复。')) {
-                localStorage.removeItem('testProgress');
-                
-                // 清除所有选中状态
-                document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-                    input.checked = false;
-                });
-                
-                // 更新问题状态
-                document.querySelectorAll('.question').forEach(question => {
-                    updateQuestionStatus(question, false);
-                });
-                
-                updateSubmitButtonStatus();
-                updateQuestionNavigation();
-                alert('答题进度已清除！');
-            }
-        }
-
-        // 生成激活码
-        function generateActivationCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        // 生成多个激活码
-        function generateMultipleCodes(count = 20, daysToExpire = 30) {
-            const newCodes = {};
-            const today = new Date();
-            
-            for (let i = 0; i < count; i++) {
-                const code = generateActivationCode();
-                // 计算过期日期
-                const expireDate = new Date();
-                expireDate.setDate(today.getDate() + daysToExpire);
-                
-                newCodes[code] = {
-                    generated: today.toISOString(),
-                    expires: expireDate.toISOString(),
-                    used: false,
-                    usedDate: null
-                };
-            }
-            
-            // 保存到localStorage
-            const existingCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-            const updatedCodes = { ...existingCodes, ...newCodes };
-            localStorage.setItem('activationCodes', JSON.stringify(updatedCodes));
-            
-            return newCodes;
-        }
-
-        // 显示激活码列表
-        function displayActivationCodes(codes) {
-            const container = document.getElementById('activationCodesList');
-            container.innerHTML = '';
-            
-            if (Object.keys(codes).length === 0) {
-                container.innerHTML = '<p>暂无激活码</p>';
-                return;
-            }
-            
-            // 按生成日期排序（最新的在前）
-            const sortedCodes = Object.entries(codes).sort((a, b) => 
-                new Date(b[1].generated) - new Date(a[1].generated)
-            );
-            
-            const today = new Date();
-            
-            sortedCodes.forEach(([code, info]) => {
-                const codeElement = document.createElement('div');
-                codeElement.style.marginBottom = '8px';
-                codeElement.style.padding = '5px';
-                codeElement.style.borderRadius = '4px';
-                
-                // 判断是否过期
-                const isExpired = new Date(info.expires) < today;
-                // 判断是否已使用
-                const isUsed = info.used;
-                
-                // 设置样式
-                if (isExpired) {
-                    codeElement.style.backgroundColor = '#ffebee';
-                    codeElement.style.textDecoration = 'line-through';
-                } else if (isUsed) {
-                    codeElement.style.backgroundColor = '#e8f5e9';
-                } else {
-                    codeElement.style.backgroundColor = '#e3f2fd';
-                }
-                
-                // 格式化日期
-                const formatDate = (dateString) => {
-                    if (!dateString) return '未使用';
-                    const date = new Date(dateString);
-                    return date.toLocaleString();
-                };
-                
-                codeElement.innerHTML = `
-                    <strong>${code}</strong> 
-                    <span style="font-size: 0.8rem; margin-left: 10px;">
-                        生成: ${formatDate(info.generated)}<br>
-                        过期: ${formatDate(info.expires)}<br>
-                        状态: ${isExpired ? '已过期' : isUsed ? '已使用' : '未使用'}<br>
-                        ${isUsed ? `使用时间: ${formatDate(info.usedDate)}` : ''}
-                    </span>
-                `;
-                
-                container.appendChild(codeElement);
-            });
-        }
-
-        // 验证激活码
-        function validateActivationCode(code) {
-            if (!code) return { valid: false, message: '请输入激活码' };
-            
-            const codes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-            const codeInfo = codes[code];
-            
-            if (!codeInfo) {
-                return { valid: false, message: '无效的激活码' };
-            }
-            
-            const today = new Date();
-            if (new Date(codeInfo.expires) < today) {
-                return { valid: false, message: '激活码已过期' };
-            }
-            
-            if (codeInfo.used) {
-                return { valid: false, message: '激活码已使用' };
-            }
-            
-            // 标记为已使用
-            codeInfo.used = true;
-            codeInfo.usedDate = new Date().toISOString();
-            localStorage.setItem('activationCodes', JSON.stringify(codes));
-            
-            return { valid: true, message: '激活成功' };
-        }
-
-        // 检查激活码使用状态并显示
-        function checkActivationCodeStatus() {
-            const input = document.getElementById('activationInput');
-            const code = input.value.trim();
-            const infoElement = document.getElementById('usageInfo');
-            
-            if (!code) {
-                infoElement.textContent = '';
-                return;
-            }
-            
-            const codes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-            const codeInfo = codes[code];
-            
-            if (!codeInfo) {
-                infoElement.textContent = '该激活码不存在';
-                infoElement.style.color = '#dc3545';
+            if (unansweredCount === 0) {
+                submitBtn.disabled = false;
+                warningMessage.style.display = 'none';
             } else {
-                const today = new Date();
-                if (new Date(codeInfo.expires) < today) {
-                    infoElement.textContent = '该激活码已过期';
-                    infoElement.style.color = '#dc3545';
-                } else if (codeInfo.used) {
-                    infoElement.textContent = '该激活码已使用';
-                    infoElement.style.color = '#dc3545';
-                } else {
-                    infoElement.textContent = '该激活码有效，可使用';
-                    infoElement.style.color = '#28a745';
+                submitBtn.disabled = true;
+                warningMessage.style.display = 'block';
+            }
+            
+            return unansweredCount === 0;
+        }
+        
+        // 更新维度得分
+        function updateDimensionScore(dimensionId) {
+            const dimension = dimensions.find(d => d.id === dimensionId);
+            if (!dimension) return;
+            
+            let dimensionScore = 0;
+            
+            for (let i = 1; i <= dimension.questions; i++) {
+                const questionName = `${dimensionId}-${i}`;
+                const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+                
+                if (selectedOption) {
+                    let score = parseInt(selectedOption.value);
+                    
+                    if (reverseQuestions.includes(questionName)) {
+                        score = 6 - score;
+                    }
+                    
+                    dimensionScore += score;
                 }
+            }
+            
+            const scoreElement = document.getElementById(`${dimensionId}-score-value`);
+            if (scoreElement) {
+                scoreElement.textContent = dimensionScore;
+            }
+        }
+        
+        // 更新进度显示
+        function updateProgress() {
+            const completedQuestions = getCompletedQuestionsCount();
+            
+            dimensions.forEach((dimension, dimIndex) => {
+                const titleElement = document.querySelector(`#${dimension.id}-dimension h2`);
+                if (titleElement) {
+                    titleElement.innerHTML = `❤️ ${dimension.name}维度（${dimIndex + 1}/10 | 已完成：${completedQuestions}题 | 剩余：${100 - completedQuestions}题）`;
+                }
+            });
+        }
+
+        // 计算得分
+        function calculateScores() {
+            try {
+                let totalScore = 0;
+                const dimensionScores = {};
+                
+                dimensions.forEach(dimension => {
+                    let dimensionScore = 0;
+                    
+                    for (let i = 1; i <= dimension.questions; i++) {
+                        const questionName = `${dimension.id}-${i}`;
+                        const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+                        
+                        if (selectedOption) {
+                            let score = parseInt(selectedOption.value);
+                            
+                            if (reverseQuestions.includes(questionName)) {
+                                score = 6 - score;
+                            }
+                            
+                            dimensionScore += score;
+                        }
+                    }
+                    
+                    dimensionScores[dimension.id] = dimensionScore;
+                    totalScore += dimensionScore;
+                });
+                
+                return { totalScore, dimensionScores };
+            } catch (error) {
+                console.error('计算得分时出错:', error);
+                return { totalScore: 0, dimensionScores: {} };
             }
         }
 
-        // 初始化事件监听
-        function initEventListeners() {
-            // 导航切换按钮
-            document.getElementById('navToggle').addEventListener('click', function() {
-                const navigation = document.getElementById('questionNavigation');
-                navigation.style.display = navigation.style.display === 'block' ? 'none' : 'block';
-            });
+        // 获取5级评分
+        function getRatingLevel(score, maxScore) {
+            const percentage = (score / maxScore) * 100;
             
-            // 提交测试按钮
-            document.getElementById('calculateResults').addEventListener('click', function() {
-                const totalQuestions = dimensions.reduce((total, dim) => total + dim.questions, 0);
-                const answeredQuestions = getCompletedQuestionsCount();
-                
-                if (answeredQuestions < totalQuestions) {
-                    document.getElementById('unansweredCount').textContent = totalQuestions - answeredQuestions;
-                    document.getElementById('warningMessage').style.display = 'block';
+            if (percentage >= 90) {
+                return { level: "闭眼冲", class: "rating-excellent" };
+            } else if (percentage >= 80) {
+                return { level: "优秀", class: "rating-good" };
+            } else if (percentage >= 70) {
+                return { level: "达标", class: "rating-medium" };
+            } else if (percentage >= 60) {
+                return { level: "待提升", class: "rating-poor" };
+            } else {
+                return { level: "慎重", class: "rating-critical" };
+            }
+        }
+
+        // 创建雷达图
+        function createRadarChart(dimensionScores) {
+            try {
+                const ctx = document.getElementById('radarChart');
+                if (!ctx) {
+                    console.error('找不到雷达图canvas元素');
                     return;
                 }
                 
-                // 显示确认模态框
-                document.getElementById('confirmationModal').style.display = 'flex';
-            });
-            
-            // 确认提交
-            document.getElementById('confirmSubmit').addEventListener('click', function() {
-                document.getElementById('confirmationModal').style.display = 'none';
-                const results = calculateResults();
-                displayResults(results);
-            });
-            
-            // 取消提交
-            document.getElementById('cancelSubmit').addEventListener('click', function() {
-                document.getElementById('confirmationModal').style.display = 'none';
-            });
-            
-            // 导出按钮
-            document.getElementById('exportImage').addEventListener('click', exportAsImage);
-            document.getElementById('exportPDF').addEventListener('click', exportAsPDF);
-            
-            // 进度管理按钮
-            document.getElementById('saveProgressBtn').addEventListener('click', saveProgress);
-            document.getElementById('loadProgressBtn').addEventListener('click', loadProgress);
-            document.getElementById('clearProgressBtn').addEventListener('click', clearProgress);
-            
-            // 管理员入口 - 点击次数触发
-            const adminTriggers = document.querySelectorAll('.admin-trigger');
-            adminTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function() {
-                    window.adminClickCount++;
+                const context = ctx.getContext('2d');
+                if (!context) {
+                    console.error('无法获取canvas上下文');
+                    return;
+                }
+                
+                if (radarChart) {
+                    radarChart.destroy();
+                }
+                
+                const labels = dimensions.map(d => d.name);
+                const scores = dimensions.map(d => dimensionScores[d.id]);
+                const maxScores = dimensions.map(d => d.questions * 5);
+                
+                const percentageScores = dimensions.map((d, i) => 
+                    Math.round((dimensionScores[d.id] / maxScores[i]) * 100)
+                );
+                
+                radarChart = new Chart(context, {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '维度得分百分比',
+                            data: percentageScores,
+                            backgroundColor: 'rgba(255, 107, 157, 0.2)',
+                            borderColor: 'rgba(255, 107, 157, 1)',
+                            pointBackgroundColor: 'rgba(255, 107, 157, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(255, 107, 157, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw;
+                                        const index = context.dataIndex;
+                                        const actualScore = scores[index];
+                                        const maxScore = maxScores[index];
+                                        return `${label}: ${value}% (${actualScore}/${maxScore}分)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('创建雷达图时出错:', error);
+            }
+        }
+
+        // 创建柱状图
+        function createBarChart(dimensionScores) {
+            try {
+                const ctx = document.getElementById('barChart');
+                if (!ctx) {
+                    console.error('找不到柱状图canvas元素');
+                    return;
+                }
+                
+                const context = ctx.getContext('2d');
+                if (!context) {
+                    console.error('无法获取canvas上下文');
+                    return;
+                }
+                
+                if (barChart) {
+                    barChart.destroy();
+                }
+                
+                const labels = dimensions.map(d => d.name);
+                const scores = dimensions.map(d => dimensionScores[d.id]);
+                const maxScores = dimensions.map(d => d.questions * 5);
+                
+                const colors = dimensions.map(d => {
+                    const percentage = (dimensionScores[d.id] / (d.questions * 5)) * 100;
+                    if (percentage >= 90) return 'rgba(111, 66, 193, 0.7)';
+                    if (percentage >= 80) return 'rgba(40, 167, 69, 0.7)';
+                    if (percentage >= 70) return 'rgba(0, 123, 255, 0.7)';
+                    if (percentage >= 60) return 'rgba(255, 193, 7, 0.7)';
+                    return 'rgba(220, 53, 69, 0.7)';
+                });
+                
+                barChart = new Chart(context, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: '实际得分',
+                                data: scores,
+                                backgroundColor: colors,
+                                borderColor: colors.map(c => c.replace('0.7', '1')),
+                                borderWidth: 1
+                            },
+                            {
+                                label: '达标线',
+                                data: dimensions.map(d => d.passScore),
+                                type: 'line',
+                                fill: false,
+                                borderColor: 'rgba(255, 193, 7, 1)',
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                tension: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '得分'
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.y;
+                                        if (context.datasetIndex === 0) {
+                                            const dimension = dimensions[context.dataIndex];
+                                            const maxScore = dimension.questions * 5;
+                                            const rating = getRatingLevel(context.parsed.y, maxScore);
+                                            label += ` (${rating.level})`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('创建柱状图时出错:', error);
+            }
+        }
+
+        // 显示结果
+        function displayResults(totalScore, dimensionScores) {
+            try {
+                const resultsSection = document.getElementById('resultsSection');
+                const tableBody = document.getElementById('resultsTableBody');
+                const totalScoreCell = document.getElementById('totalScoreCell');
+                const commentary = document.getElementById('commentary');
+                const personalizedAdviceSection = document.getElementById('personalizedAdvice');
+                
+                tableBody.innerHTML = '';
+                
+                const passedDimensions = dimensions.filter(dim => dimensionScores[dim.id] >= dim.passScore).length;
+                const totalDimensions = dimensions.length;
+                
+                dimensions.forEach(dimension => {
+                    const score = dimensionScores[dimension.id];
+                    const maxScore = dimension.questions * 5;
+                    const rating = getRatingLevel(score, maxScore);
                     
-                    if (window.adminClickTimer) {
-                        clearTimeout(window.adminClickTimer);
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${dimension.name}</td>
+                        <td>${getQuestionRange(dimension.id)}</td>
+                        <td>${score}</td>
+                        <td>${maxScore}</td>
+                        <td><span class="${rating.class}">${rating.level}</span></td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                totalScoreCell.innerHTML = `<strong>${totalScore}</strong> 分`;
+                
+                setTimeout(() => {
+                    createRadarChart(dimensionScores);
+                    createBarChart(dimensionScores);
+                }, 100);
+                
+                commentary.innerHTML = generateCommentary(totalScore, dimensionScores, passedDimensions, totalDimensions);
+                
+                personalizedAdviceSection.innerHTML = generatePersonalizedAdvice(dimensionScores);
+                
+                resultsSection.style.display = 'block';
+                
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('显示结果时出错:', error);
+                alert('显示结果时出现错误，请刷新页面重试。');
+            }
+        }
+
+        // 生成个性化建议
+        function generatePersonalizedAdvice(dimensionScores) {
+            try {
+                let advice = '<h4>个性化改进建议</h4>';
+                
+                const dimensionScoresArray = dimensions.map(dimension => ({
+                    name: dimension.name,
+                    id: dimension.id,
+                    score: dimensionScores[dimension.id],
+                    maxScore: dimension.questions * 5,
+                    percentage: (dimensionScores[dimension.id] / (dimension.questions * 5)) * 100
+                }));
+                
+                const dimensionsToImprove = dimensionScoresArray
+                    .sort((a, b) => a.percentage - b.percentage)
+                    .slice(0, 3);
+                
+                dimensionsToImprove.forEach(dimension => {
+                    let adviceLevel;
+                    if (dimension.percentage >= 90) {
+                        adviceLevel = 'excellent';
+                    } else if (dimension.percentage >= 80) {
+                        adviceLevel = 'good';
+                    } else if (dimension.percentage >= 70) {
+                        adviceLevel = 'medium';
+                    } else if (dimension.percentage >= 60) {
+                        adviceLevel = 'poor';
+                    } else {
+                        adviceLevel = 'critical';
                     }
                     
-                    window.adminClickTimer = setTimeout(() => {
-                        if (window.adminClickCount >= 5) {
-                            window.showAdminAccess();
-                        }
-                        window.adminClickCount = 0;
-                    }, 1000);
+                    const adviceList = personalizedAdvice[dimension.id][adviceLevel];
+                    const rating = getRatingLevel(dimension.score, dimension.maxScore);
+                    
+                    advice += `<div class="dimension-advice" style="margin-bottom: 20px;">
+                        <h5><span class="${rating.class}">${dimension.name}维度 (${rating.level})</span></h5>
+                        <ul>`;
+                    
+                    adviceList.forEach(item => {
+                        advice += `<li>${item}</li>`;
+                    });
+                    
+                    advice += `</ul></div>`;
                 });
-            });
+                
+                const totalScore = Object.values(dimensionScores).reduce((a, b) => a + b, 0);
+                if (totalScore >= 450) {
+                    advice += '<div style="margin-top: 15px; padding: 15px; background-color: #f8f9ff; border-radius: 8px; border-left: 4px solid #6f42c1;">';
+                    advice += '<p style="font-weight: bold; color: #6f42c1;">恭喜你们！你们的适配度非常高，基本可以闭眼冲！继续保持良好的沟通和互动，你们的婚姻将会非常幸福美满。</p>';
+                    advice += '</div>';
+                } else if (totalScore >= 400) {
+                    advice += '<div style="margin-top: 15px; padding: 15px; background-color: #f8fff9; border-radius: 8px; border-left: 4px solid #28a745;">';
+                    advice += '<p>你们的适配度良好，只要针对上述建议进行改进，你们的婚姻前景非常乐观。</p>';
+                    advice += '</div>';
+                } else if (totalScore >= 350) {
+                    advice += '<div style="margin-top: 15px; padding: 15px; background-color: #f0f8ff; border-radius: 8px; border-left: 4px solid #007bff;">';
+                    advice += '<p>你们的适配度中等，建议重点关注上述改进建议，共同努力提升关系质量。</p>';
+                    advice += '</div>';
+                } else {
+                    advice += '<div style="margin-top: 15px; padding: 15px; background-color: #fff9e6; border-radius: 8px; border-left: 4px solid #ffc107;">';
+                    advice += '<p>你们的适配度有待提高，建议认真考虑上述改进建议，必要时可寻求专业婚恋咨询师的帮助。</p>';
+                    advice += '</div>';
+                }
+                
+                return advice;
+            } catch (error) {
+                console.error('生成个性化建议时出错:', error);
+                return '<p>生成个性化建议时出现错误。</p>';
+            }
+        }
+
+        // 生成评语
+        function generateCommentary(totalScore, dimensionScores, passedDimensions, totalDimensions) {
+            try {
+                let commentary = '<h3>情感专家分析与建议</h3>';
+                
+                const passRate = passedDimensions / totalDimensions;
+                
+                let overallComment;
+                if (passRate >= 0.9 && totalScore >= 450) {
+                    overallComment = overallComments.excellent;
+                } else if (passRate >= 0.8 && totalScore >= 400) {
+                    overallComment = overallComments.good;
+                } else if (passRate >= 0.7 && totalScore >= 350) {
+                    overallComment = overallComments.medium;
+                } else if (passRate >= 0.6 && totalScore >= 300) {
+                    overallComment = overallComments.poor;
+                } else {
+                    overallComment = overallComments.critical;
+                }
+                
+                commentary += `
+                    <div class="dimension-commentary">
+                        <h4>${overallComment.title}</h4>
+                        <p>${overallComment.content}</p>
+                    </div>
+                `;
+                
+                commentary += '<h3>各维度详细分析</h3>';
+                
+                dimensions.forEach(dimension => {
+                    const score = dimensionScores[dimension.id];
+                    const maxScore = dimension.questions * 5;
+                    const percentage = (score / maxScore) * 100;
+                    
+                    let commentLevel;
+                    if (percentage >= 80) {
+                        commentLevel = 'high';
+                    } else if (percentage >= 60) {
+                        commentLevel = 'medium';
+                    } else {
+                        commentLevel = 'low';
+                    }
+                    
+                    const comment = expertComments[dimension.id][commentLevel];
+                    const rating = getRatingLevel(score, maxScore);
+                    
+                    if (percentage >= 70) {
+                        commentary += `
+                            <div class="dimension-commentary">
+                                <h4>${dimension.name}维度 (${score}/${maxScore}) - <span class="${rating.class}">${rating.level}</span></h4>
+                                <p>${comment}</p>
+                            </div>
+                        `;
+                    } else {
+                        commentary += `
+                            <div class="dimension-analysis">
+                                <h4>${dimension.name}维度 (${score}/${maxScore}) - <span class="${rating.class}">${rating.level}</span></h4>
+                                <p>${comment}</p>
+                            </div>
+                        `;
+                    }
+                });
+                
+                commentary += `
+                    <div class="dimension-commentary" style="margin-top: 30px;">
+                        <h4>情感专家温馨提示</h4>
+                        <p>婚姻是两个人共同经营的事业，测试结果仅供参考。无论得分如何，最重要的是双方愿意为彼此和关系付出努力，共同成长。每段关系都有其独特性，真正的幸福来自于相互理解、包容和共同成长。祝你们幸福！</p>
+                    </div>
+                `;
+                
+                return commentary;
+            } catch (error) {
+                console.error('生成评语时出错:', error);
+                return '<p>生成评语时出现错误。</p>';
+            }
+        }
+
+        // 导出为图片
+        function exportToImage() {
+            try {
+                const resultsSection = document.getElementById('resultsSection');
+                
+                const exportBtn = document.getElementById('exportImage');
+                const originalText = exportBtn.textContent;
+                exportBtn.textContent = '生成中...';
+                exportBtn.disabled = true;
+                
+                html2canvas(resultsSection).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = '结婚适配度测试结果.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                }).catch(error => {
+                    console.error('导出图片时出错:', error);
+                    alert('导出图片时出现错误，请重试。');
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                });
+            } catch (error) {
+                console.error('导出图片时出错:', error);
+                alert('导出图片时出现错误，请重试。');
+            }
+        }
+
+        // 导出为PDF
+        function exportToPDF() {
+            try {
+                const resultsSection = document.getElementById('resultsSection');
+                
+                const exportBtn = document.getElementById('exportPDF');
+                const originalText = exportBtn.textContent;
+                exportBtn.textContent = '生成中...';
+                exportBtn.disabled = true;
+                
+                html2canvas(resultsSection).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('结婚适配度测试结果.pdf');
+                    
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                }).catch(error => {
+                    console.error('导出PDF时出错:', error);
+                    alert('导出PDF时出现错误，请重试。');
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                });
+            } catch (error) {
+                console.error('导出PDF时出错:', error);
+                alert('导出PDF时出现错误，请重试。');
+            }
+        }
+
+        // 保存进度
+        function saveProgress() {
+            try {
+                const progress = {};
+                
+                dimensions.forEach(dimension => {
+                    for (let i = 1; i <= dimension.questions; i++) {
+                        const questionName = `${dimension.id}-${i}`;
+                        const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+                        if (selectedOption) {
+                            progress[questionName] = selectedOption.value;
+                        }
+                    }
+                });
+                
+                localStorage.setItem('testProgress', JSON.stringify(progress));
+                alert('进度已保存！您可以稍后继续测试。');
+            } catch (error) {
+                console.error('保存进度时出错:', error);
+                alert('保存进度时出现错误，请重试。');
+            }
+        }
+
+        // 加载进度
+        function loadProgress() {
+            try {
+                const progress = JSON.parse(localStorage.getItem('testProgress')) || {};
+                
+                Object.keys(progress).forEach(questionName => {
+                    const value = progress[questionName];
+                    const input = document.querySelector(`input[name="${questionName}"][value="${value}"]`);
+                    if (input) {
+                        input.checked = true;
+                    }
+                });
+                
+                dimensions.forEach(dimension => {
+                    updateDimensionScore(dimension.id);
+                });
+                
+                updateProgress();
+                checkAllQuestionsAnswered();
+                updateQuestionNavigation();
+                
+                alert('进度已加载！');
+            } catch (error) {
+                console.error('加载进度时出错:', error);
+                alert('加载进度时出现错误，请重试。');
+            }
+        }
+
+        // 清除进度
+        function clearProgress() {
+            if (confirm('确定要清除所有答题进度吗？此操作不可撤销！')) {
+                try {
+                    dimensions.forEach(dimension => {
+                        for (let i = 1; i <= dimension.questions; i++) {
+                            const questionName = `${dimension.id}-${i}`;
+                            const inputs = document.querySelectorAll(`input[name="${questionName}"]`);
+                            inputs.forEach(input => {
+                                input.checked = false;
+                            });
+                        }
+                    });
+                    
+                    localStorage.removeItem('testProgress');
+                    
+                    dimensions.forEach(dimension => {
+                        updateDimensionScore(dimension.id);
+                    });
+                    
+                    updateProgress();
+                    checkAllQuestionsAnswered();
+                    updateQuestionNavigation();
+                    
+                    alert('进度已清除！');
+                } catch (error) {
+                    console.error('清除进度时出错:', error);
+                    alert('清除进度时出现错误，请重试。');
+                }
+            }
+        }
+
+        // 激活码管理功能
+        function generateActivationCodes() {
+            const codes = JSON.parse(localStorage.getItem('activationCodes')) || {};
             
-            // 隐藏的管理员按钮
-            document.getElementById('hiddenAdminBtn').addEventListener('click', window.showAdminAccess);
+            // 首先确保预设激活码存在
+            initializePresetCodes();
             
-            // 管理员按钮
-            document.getElementById('generateCodesBtn').addEventListener('click', function() {
-                generateMultipleCodes();
-                const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-                displayActivationCodes(storedCodes);
-                alert('已生成20个新的激活码，有效期30天');
-            });
+            for (let i = 0; i < 20; i++) {
+                const code = 'ACT' + Math.random().toString(36).substring(2, 10).toUpperCase();
+                // 确保过期时间是未来的时间戳
+                const expiry = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); // 30天后过期
+                
+                codes[code] = {
+                    code: code,
+                    expiry: expiry,
+                    used: false,
+                    isPublic: false,
+                    preset: false,
+                    maxUses: 1,
+                    currentUses: 0
+                };
+            }
             
-            document.getElementById('clearStorageBtn').addEventListener('click', function() {
-                if (confirm('确定要清除所有数据吗？包括激活码和测试记录。此操作不可恢复。')) {
-                    localStorage.clear();
-                    window.activationCodes = {};
-                    displayActivationCodes({});
-                    alert('所有数据已清除');
+            localStorage.setItem('activationCodes', JSON.stringify(codes));
+            window.activationCodes = codes;
+            
+            return codes;
+        }
+        
+        function displayActivationCodes(codes) {
+            const list = document.getElementById('activationCodesList');
+            list.innerHTML = '';
+            
+            if (Object.keys(codes).length === 0) {
+                list.innerHTML = '<p>暂无激活码，请点击上方按钮生成</p>';
+                return;
+            }
+            
+            // 首先显示预设激活码
+            const presetCodesDiv = document.createElement('div');
+            presetCodesDiv.style.marginBottom = '20px';
+            presetCodesDiv.style.padding = '10px';
+            presetCodesDiv.style.backgroundColor = '#f0f8ff';
+            presetCodesDiv.style.borderRadius = '5px';
+            
+            const presetTitle = document.createElement('h4');
+            presetTitle.textContent = '预设激活码';
+            presetTitle.style.color = '#2d7dd2';
+            presetTitle.style.marginBottom = '10px';
+            presetCodesDiv.appendChild(presetTitle);
+            
+            window.PRESET_CODES.forEach(presetCode => {
+                const codeInfo = codes[presetCode.code];
+                if (codeInfo) {
+                    const codeElement = document.createElement('div');
+                    codeElement.style.padding = '5px 0';
+                    codeElement.style.borderBottom = '1px dashed #ddd';
+                    
+                    const status = codeInfo.used || codeInfo.currentUses >= codeInfo.maxUses ? 
+                        `<span style="color:red">(已使用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次)</span>` : 
+                        `<span style="color:green">(可用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次)</span>`;
+                        
+                    codeElement.innerHTML = `<strong>${codeInfo.code}</strong> ${status} - 预设激活码`;
+                    presetCodesDiv.appendChild(codeElement);
                 }
             });
             
+            list.appendChild(presetCodesDiv);
+            
+            // 然后显示普通激活码
+            const normalCodesDiv = document.createElement('div');
+            const normalTitle = document.createElement('h4');
+            normalTitle.textContent = '普通激活码';
+            normalTitle.style.color = '#2d7dd2';
+            normalTitle.style.marginBottom = '10px';
+            normalCodesDiv.appendChild(normalTitle);
+            
+            let hasNormalCodes = false;
+            
+            Object.keys(codes).forEach(code => {
+                const item = codes[code];
+                if (!item.preset) { // 只显示普通激活码
+                    hasNormalCodes = true;
+                    const codeElement = document.createElement('div');
+                    codeElement.style.padding = '5px 0';
+                    codeElement.style.borderBottom = '1px dashed #ddd';
+                    
+                    const status = item.used ? 
+                        `<span style="color:red">(已使用)</span>` : 
+                        '<span style="color:green">(未使用)</span>';
+                        
+                    codeElement.innerHTML = `<strong>${item.code}</strong> ${status} - 有效期至: ${new Date(item.expiry).toLocaleString()}`;
+                    normalCodesDiv.appendChild(codeElement);
+                }
+            });
+            
+            if (!hasNormalCodes) {
+                normalCodesDiv.innerHTML += '<p>暂无普通激活码</p>';
+            }
+            
+            list.appendChild(normalCodesDiv);
+        }
+        
+        // 初始化预设激活码
+        function initializePresetCodes() {
+            const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
+            let updated = false;
+            
+            // 初始化预设激活码
+            window.PRESET_CODES.forEach(presetCode => {
+                if (!storedCodes[presetCode.code]) {
+                    storedCodes[presetCode.code] = {
+                        code: presetCode.code,
+                        expiry: new Date().getTime() + (365 * 24 * 60 * 60 * 1000 * 10), // 10年后过期
+                        used: false,
+                        isPublic: presetCode.isPublic,
+                        preset: presetCode.preset,
+                        maxUses: presetCode.maxUses,
+                        currentUses: 0
+                    };
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                localStorage.setItem('activationCodes', JSON.stringify(storedCodes));
+                window.activationCodes = storedCodes;
+            }
+        }
+        
+        // 激活码验证逻辑
+        function validateActivationCode(inputCode) {
+            try {
+                const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
+                const currentTime = new Date().getTime();
+                
+                // 首先检查预设激活码
+                window.PRESET_CODES.forEach(presetCode => {
+                    if (presetCode.code === inputCode && !storedCodes[presetCode.code]) {
+                        // 如果预设激活码不存在，则创建它
+                        storedCodes[presetCode.code] = {
+                            code: presetCode.code,
+                            expiry: currentTime + (365 * 24 * 60 * 60 * 1000 * 10), // 10年后过期
+                            used: false,
+                            isPublic: presetCode.isPublic,
+                            preset: presetCode.preset,
+                            maxUses: presetCode.maxUses,
+                            currentUses: 0
+                        };
+                    }
+                });
+                
+                if (storedCodes[inputCode]) {
+                    const codeInfo = storedCodes[inputCode];
+                    
+                    // 检查激活码是否有效且未使用完
+                    if (codeInfo.expiry > currentTime && codeInfo.currentUses < codeInfo.maxUses) {
+                        // 增加使用次数
+                        codeInfo.currentUses++;
+                        
+                        if (codeInfo.currentUses >= codeInfo.maxUses) {
+                            codeInfo.used = true;
+                        }
+                        
+                        // 更新localStorage
+                        localStorage.setItem('activationCodes', JSON.stringify(storedCodes));
+                        
+                        // 保存当前会话激活状态
+                        sessionStorage.setItem('currentSessionActive', 'true');
+                        sessionStorage.setItem('currentActivationCode', inputCode);
+                        
+                        return true;
+                    } else {
+                        console.log('激活码验证失败:', {
+                            code: inputCode,
+                            expiry: codeInfo.expiry,
+                            currentTime: currentTime,
+                            expired: codeInfo.expiry <= currentTime,
+                            uses: `${codeInfo.currentUses}/${codeInfo.maxUses}`
+                        });
+                    }
+                } else {
+                    console.log('激活码不存在:', inputCode);
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('激活码验证错误:', error);
+                return false;
+            }
+        }
+        
+        function checkActivation() {
+            // 检查当前会话是否已激活
+            return sessionStorage.getItem('currentSessionActive') === 'true';
+        }
+        
+        // 显示激活码使用信息
+        function displayUsageInfo(code) {
+            const usageInfo = document.getElementById('usageInfo');
+            const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
+            const currentTime = new Date().getTime();
+            
+            // 首先检查是否是预设激活码
+            const isPresetCode = window.PRESET_CODES.some(preset => preset.code === code);
+            
+            if (isPresetCode && !storedCodes[code]) {
+                // 如果是预设激活码但不存在于存储中，显示为可用
+                usageInfo.innerHTML = `此激活码可用 0/10000 次`;
+                return;
+            }
+            
+            if (storedCodes[code]) {
+                const codeInfo = storedCodes[code];
+                
+                if (codeInfo.used || codeInfo.currentUses >= codeInfo.maxUses) {
+                    usageInfo.innerHTML = `此激活码已使用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次`;
+                } else if (codeInfo.expiry <= currentTime) {
+                    usageInfo.innerHTML = `此激活码已过期`;
+                } else {
+                    usageInfo.innerHTML = `此激活码可用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次`;
+                }
+            } else {
+                usageInfo.innerHTML = `激活码不存在`;
+            }
+        }
+
+        // 管理员点击处理函数
+        function handleAdminClick(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            adminClickCount++;
+            
+            if (adminClickTimer) {
+                clearTimeout(adminClickTimer);
+            }
+            
+            adminClickTimer = setTimeout(() => {
+                adminClickCount = 0;
+            }, 3000);
+            
+            if (adminClickCount >= 5) {
+                adminClickCount = 0;
+                window.showAdminAccess();
+            }
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            createBackgroundElements();
+            
+            // 初始化预设激活码
+            initializePresetCodes();
+            
+            // 检查当前会话是否已激活
+            if (checkActivation()) {
+                document.getElementById('activationSection').style.display = 'none';
+                document.getElementById('testContainer').style.display = 'block';
+                generateTestQuestions();
+                updateProgress();
+                
+                const firstUnanswered = document.querySelector('input[type="radio"]:not(:checked)');
+                if (firstUnanswered) {
+                    firstUnanswered.closest('.dimension').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+            
+            // 激活按钮事件
+            document.getElementById('activateBtn').addEventListener('click', function() {
+                const code = document.getElementById('activationInput').value.trim();
+                if (validateActivationCode(code)) {
+                    document.getElementById('activationSection').style.display = 'none';
+                    document.getElementById('testContainer').style.display = 'block';
+                    generateTestQuestions();
+                    updateProgress();
+                } else {
+                    alert('激活码无效、已过期或已被使用，请检查后重试');
+                }
+            });
+            
+            // 激活码输入框变化时显示使用信息
+            document.getElementById('activationInput').addEventListener('input', function() {
+                const code = this.value.trim();
+                if (code) {
+                    displayUsageInfo(code);
+                } else {
+                    document.getElementById('usageInfo').innerHTML = '';
+                }
+            });
+            
+            // 重新绑定管理员入口点击事件
+            const adminTriggers = document.querySelectorAll('.admin-trigger');
+            adminTriggers.forEach(trigger => {
+                trigger.removeEventListener('click', handleAdminClick);
+                trigger.addEventListener('click', handleAdminClick, {capture: true});
+            });
+            
+            // 隐藏管理员按钮事件
+            document.getElementById('hiddenAdminBtn').addEventListener('click', function() {
+                window.showAdminAccess();
+            });
+            
+            // 生成激活码按钮事件
+            document.getElementById('generateCodesBtn').addEventListener('click', function() {
+                const codes = generateActivationCodes();
+                displayActivationCodes(codes);
+            });
+            
+            // 清除所有数据按钮事件
+            document.getElementById('clearStorageBtn').addEventListener('click', function() {
+                if (confirm('确定要清除所有测试数据和激活码吗？此操作不可逆！')) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.activationCodes = {};
+                    alert('所有数据已清除');
+                    location.reload();
+                }
+            });
+            
+            // 返回激活页面按钮事件
             document.getElementById('backToActivationBtn').addEventListener('click', function() {
                 document.getElementById('adminSection').style.display = 'none';
                 document.getElementById('activationSection').style.display = 'block';
             });
             
-            // 激活按钮
-            document.getElementById('activateBtn').addEventListener('click', function() {
-                const code = document.getElementById('activationInput').value.trim();
-                const result = validateActivationCode(code);
-                
-                if (result.valid) {
-                    alert(result.message);
-                    document.getElementById('activationSection').style.display = 'none';
-                    document.getElementById('testContainer').style.display = 'block';
+            // 保存进度按钮事件
+            document.getElementById('saveProgressBtn').addEventListener('click', saveProgress);
+            
+            // 加载进度按钮事件
+            document.getElementById('loadProgressBtn').addEventListener('click', loadProgress);
+            
+            // 清除进度按钮事件
+            document.getElementById('clearProgressBtn').addEventListener('click', clearProgress);
+            
+            // 问题导航切换按钮事件
+            document.getElementById('navToggle').addEventListener('click', function() {
+                const nav = document.getElementById('questionNavigation');
+                if (nav.style.display === 'block') {
+                    nav.style.display = 'none';
+                    this.textContent = '问题导航';
                 } else {
-                    alert(result.message);
+                    nav.style.display = 'block';
+                    this.textContent = '隐藏导航';
                 }
             });
             
-            // 激活码输入框事件
-            document.getElementById('activationInput').addEventListener('input', checkActivationCodeStatus);
-            document.getElementById('activationInput').addEventListener('blur', checkActivationCodeStatus);
+            // 提交按钮事件监听
+            document.getElementById('calculateResults').addEventListener('click', function() {
+                if (!checkAllQuestionsAnswered()) {
+                    alert('请完成所有题目后再提交测试！');
+                    return;
+                }
+                
+                document.getElementById('confirmationModal').style.display = 'flex';
+            });
             
-            // 回车激活
-            document.getElementById('activationInput').addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    document.getElementById('activateBtn').click();
+            // 确认提交按钮事件
+            document.getElementById('confirmSubmit').addEventListener('click', function() {
+                const submitBtn = document.getElementById('calculateResults');
+                submitBtn.classList.add('loading-btn');
+                submitBtn.textContent = '计算中...';
+                
+                try {
+                    const { totalScore, dimensionScores } = calculateScores();
+                    displayResults(totalScore, dimensionScores);
+                    document.getElementById('confirmationModal').style.display = 'none';
+                } catch (error) {
+                    console.error('计算得分时出错:', error);
+                    alert('计算得分时出现错误，请刷新页面重试。');
+                } finally {
+                    submitBtn.classList.remove('loading-btn');
+                    submitBtn.textContent = '计算测试结果';
                 }
             });
-        }
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            createBackgroundHearts();
-            generateQuestions();
-            generateQuestionNavigation();
-            initEventListeners();
+            
+            // 取消提交按钮事件
+            document.getElementById('cancelSubmit').addEventListener('click', function() {
+                document.getElementById('confirmationModal').style.display = 'none';
+            });
+            
+            // 导出按钮事件
+            document.getElementById('exportImage').addEventListener('click', exportToImage);
+            document.getElementById('exportPDF').addEventListener('click', exportToPDF);
         });
+
+        // 备用初始化方案
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    const adminTriggers = document.querySelectorAll('.admin-trigger');
+                    adminTriggers.forEach(trigger => {
+                        trigger.addEventListener('click', handleAdminClick, {capture: true});
+                    });
+                }, 100);
+            });
+        } else {
+            setTimeout(function() {
+                const adminTriggers = document.querySelectorAll('.admin-trigger');
+                adminTriggers.forEach(trigger => {
+                    trigger.addEventListener('click', handleAdminClick, {capture: true});
+                });
+            }, 100);
+        }
     </script>
 </body>
 </html>
