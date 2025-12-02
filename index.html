@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>结婚适配度测试表</title>
     <!-- 引入Chart.js用于数据可视化 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -26,6 +26,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -35,6 +36,7 @@
             position: relative;
             overflow-x: hidden;
             min-height: 100vh;
+            -webkit-text-size-adjust: 100%;
         }
         
         .background-elements {
@@ -100,6 +102,7 @@
             margin-bottom: 10px;
             cursor: pointer;
             user-select: none;
+            word-wrap: break-word;
         }
         
         h2 {
@@ -108,6 +111,7 @@
             color: var(--dark-color);
             border-bottom: 2px solid var(--secondary-color);
             padding-bottom: 5px;
+            word-wrap: break-word;
         }
         
         h3 {
@@ -128,6 +132,15 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border-left: 4px solid var(--primary-color);
+        }
+        
+        .intro ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .intro li {
+            margin-bottom: 8px;
         }
         
         .dimension {
@@ -151,6 +164,7 @@
             border-radius: 5px;
             background-color: white;
             position: relative;
+            overflow: hidden;
         }
         
         .question.unanswered {
@@ -167,6 +181,8 @@
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.8rem;
+            z-index: 2;
+            white-space: nowrap;
         }
         
         .options {
@@ -216,12 +232,14 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            font-size: 0.9rem;
         }
         
         .results-table th, .results-table td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
+            word-break: break-word;
         }
         
         .results-table th {
@@ -256,11 +274,16 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
         }
         
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
         }
         
         .submit-btn:disabled {
@@ -564,11 +587,9 @@
             border-radius: 4px;
         }
         
-        /* 激活码使用次数提示 */
+        /* 激活码使用次数提示 - 隐藏 */
         .usage-info {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #666;
+            display: none !important;
         }
         
         /* 评分准则说明 */
@@ -712,7 +733,54 @@
             box-shadow: var(--shadow);
         }
         
+        /* 新增：响应式调整 */
         @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+            }
+            
+            h4 {
+                font-size: 1rem;
+            }
+            
+            .intro {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            
+            .dimension {
+                padding: 12px;
+            }
+            
+            .question {
+                padding: 12px 10px 10px 10px;
+            }
+            
+            .unanswered-marker {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: inline-block;
+                margin-bottom: 8px;
+                margin-left: 0;
+                padding: 3px 10px;
+                font-size: 0.75rem;
+            }
+            
             .options {
                 flex-direction: column;
                 gap: 5px;
@@ -720,10 +788,15 @@
             
             .option {
                 margin-right: 0;
+                padding: 5px 0;
             }
             
-            .container {
-                padding: 10px;
+            .option label {
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
             }
             
             .modal-buttons {
@@ -736,6 +809,7 @@
             
             .chart-wrapper {
                 max-width: 100%;
+                min-width: 100%;
             }
             
             .export-buttons {
@@ -746,10 +820,164 @@
                 right: 10px;
                 left: 10px;
                 max-width: calc(100% - 20px);
+                top: 60px;
+                transform: none;
+                max-height: 60vh;
+            }
+            
+            .nav-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 0.9rem;
             }
             
             .progress-buttons {
                 flex-direction: column;
+                gap: 10px;
+            }
+            
+            .submit-btn {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+                width: 90%;
+                max-width: 300px;
+            }
+            
+            .activation-section, .admin-section {
+                margin: 20px auto;
+                padding: 20px;
+                width: calc(100% - 20px);
+            }
+            
+            .activation-input {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            
+            .admin-btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .results-table {
+                font-size: 0.8rem;
+            }
+            
+            .results-table th, .results-table td {
+                padding: 6px 4px;
+            }
+            
+            .dimension-footer {
+                font-size: 0.9rem;
+            }
+            
+            .special-questions .question {
+                padding-right: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 5px;
+            }
+            
+            header {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .question p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                margin-bottom: 8px;
+            }
+            
+            .option label {
+                font-size: 0.85rem;
+            }
+            
+            .dimension-score {
+                font-size: 0.9rem;
+            }
+            
+            .results-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .balloon {
+                width: 30px !important;
+                height: 30px !important;
+            }
+            
+            .hidden-admin-btn {
+                width: 25px;
+                height: 25px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            /* 平板电脑优化 */
+            .container {
+                max-width: 95%;
+                padding: 20px;
+            }
+            
+            .chart-wrapper {
+                min-width: 45%;
+            }
+            
+            .options {
+                gap: 8px;
+            }
+        }
+        
+        /* 防止长文本溢出 */
+        .question p {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            margin-right: 80px; /* 为"未答"标签留出空间 */
+        }
+        
+        @media (max-width: 768px) {
+            .question p {
+                margin-right: 0;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .submit-btn:hover {
+                transform: none;
+            }
+            
+            .export-btn:hover {
+                transform: none;
+            }
+            
+            .progress-btn:hover {
+                transform: none;
+            }
+            
+            .option {
+                min-height: 44px; /* 最小触摸目标尺寸 */
+            }
+            
+            .option input {
+                transform: scale(1.2); /* 增大触摸目标 */
+                margin-right: 8px;
             }
         }
     </style>
@@ -774,7 +1002,7 @@
         <p>请输入激活码以使用本测试表</p>
         <input type="text" class="activation-input" id="activationInput" placeholder="请输入激活码">
         <div class="usage-info" id="usageInfo">
-            <!-- 使用次数信息将在这里显示 -->
+            <!-- 使用次数信息将在这里显示（已隐藏） -->
         </div>
         <button class="submit-btn" id="activateBtn">激活</button>
         <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">如需获取激活码，请联系管理员</p>
@@ -1885,6 +2113,8 @@
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
                         scales: {
                             r: {
                                 angleLines: {
@@ -1980,6 +2210,8 @@
                         ]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
                         scales: {
                             y: {
                                 beginAtZero: true,
@@ -2422,8 +2654,8 @@
                     codeElement.style.borderBottom = '1px dashed #ddd';
                     
                     const status = codeInfo.used || codeInfo.currentUses >= codeInfo.maxUses ? 
-                        `<span style="color:red">(已使用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次)</span>` : 
-                        `<span style="color:green">(可用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次)</span>`;
+                        `<span style="color:red">(已使用)</span>` : 
+                        `<span style="color:green">(可用)</span>`;
                         
                     codeElement.innerHTML = `<strong>${codeInfo.code}</strong> ${status} - 预设激活码`;
                     presetCodesDiv.appendChild(codeElement);
@@ -2560,34 +2792,9 @@
             return sessionStorage.getItem('currentSessionActive') === 'true';
         }
         
-        // 显示激活码使用信息
+        // 显示激活码使用信息 - 已隐藏
         function displayUsageInfo(code) {
-            const usageInfo = document.getElementById('usageInfo');
-            const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
-            const currentTime = new Date().getTime();
-            
-            // 首先检查是否是预设激活码
-            const isPresetCode = window.PRESET_CODES.some(preset => preset.code === code);
-            
-            if (isPresetCode && !storedCodes[code]) {
-                // 如果是预设激活码但不存在于存储中，显示为可用
-                usageInfo.innerHTML = `此激活码可用 0/10000 次`;
-                return;
-            }
-            
-            if (storedCodes[code]) {
-                const codeInfo = storedCodes[code];
-                
-                if (codeInfo.used || codeInfo.currentUses >= codeInfo.maxUses) {
-                    usageInfo.innerHTML = `此激活码已使用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次`;
-                } else if (codeInfo.expiry <= currentTime) {
-                    usageInfo.innerHTML = `此激活码已过期`;
-                } else {
-                    usageInfo.innerHTML = `此激活码可用 ${codeInfo.currentUses}/${codeInfo.maxUses} 次`;
-                }
-            } else {
-                usageInfo.innerHTML = `激活码不存在`;
-            }
+            // 此功能已隐藏，不再显示使用次数信息
         }
 
         // 管理员点击处理函数
@@ -2642,16 +2849,6 @@
                     updateProgress();
                 } else {
                     alert('激活码无效、已过期或已被使用，请检查后重试');
-                }
-            });
-            
-            // 激活码输入框变化时显示使用信息
-            document.getElementById('activationInput').addEventListener('input', function() {
-                const code = this.value.trim();
-                if (code) {
-                    displayUsageInfo(code);
-                } else {
-                    document.getElementById('usageInfo').innerHTML = '';
                 }
             });
             
