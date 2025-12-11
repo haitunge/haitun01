@@ -851,11 +851,17 @@
             
             .modal-content {
                 padding: 20px;
+                max-width: 90%;
             }
             
             .modal-buttons {
                 flex-direction: column;
                 gap: 10px;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                padding: 12px;
             }
             
             .charts-container {
@@ -866,11 +872,18 @@
                 max-width: 100%;
                 min-width: 100%;
                 height: 250px;
+                margin-bottom: 15px;
             }
             
             .export-buttons {
                 flex-direction: column;
                 gap: 10px;
+            }
+            
+            .export-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 1rem;
             }
             
             .question-navigation {
@@ -880,6 +893,7 @@
                 top: 60px;
                 transform: none;
                 max-height: 60vh;
+                padding: 10px;
             }
             
             .nav-toggle {
@@ -894,12 +908,18 @@
                 gap: 10px;
             }
             
+            .progress-btn {
+                width: 100%;
+                padding: 12px;
+            }
+            
             .submit-btn {
                 padding: 14px 30px;
                 font-size: 1.1rem;
                 width: 90%;
                 max-width: 300px;
                 border-radius: 50px;
+                margin: 20px auto;
             }
             
             .activation-section, .admin-section {
@@ -917,6 +937,7 @@
                 display: block;
                 width: 100%;
                 margin: 10px 0;
+                padding: 12px;
             }
             
             .results-table {
@@ -932,13 +953,30 @@
             
             .dimension-footer {
                 font-size: 0.9rem;
+                padding-top: 8px;
+                margin-top: 12px;
             }
             
             .special-questions .question {
                 padding-right: 12px;
             }
             
-            /* 移动端表格列宽调整 */
+            .special-questions .options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            /* 手机端结果页面优化 */
+            .results-section {
+                padding: 15px;
+                margin-top: 20px;
+            }
+            
+            .commentary, .personalized-advice, .rating-guide {
+                padding: 12px;
+                margin-top: 15px;
+            }
+            
+            /* 手机端表格列宽调整 */
             .results-table th:nth-child(1),
             .results-table td:nth-child(1) {
                 width: 25%;
@@ -964,9 +1002,38 @@
                 width: 30%;
             }
             
-            /* 调整特殊问题选项布局 */
-            .special-questions .options {
-                grid-template-columns: repeat(2, 1fr);
+            /* 手机端底部按钮优化 */
+            footer {
+                padding: 12px;
+                margin-top: 20px;
+                font-size: 0.85rem;
+            }
+            
+            /* 手机端警告消息优化 */
+            .warning-message {
+                padding: 12px;
+                margin: 15px 0;
+                font-size: 0.9rem;
+            }
+            
+            /* 手机端维度标题优化 */
+            .dimension h2 {
+                font-size: 1.15rem;
+                padding-bottom: 8px;
+                margin: 15px 0 12px;
+            }
+            
+            /* 手机端进度信息优化 */
+            .progress-info {
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+            }
+            
+            /* 手机端维度分数显示优化 */
+            .dimension-score {
+                font-size: 0.9rem;
+                padding: 4px 8px;
+                margin-top: 8px;
             }
         }
         
@@ -978,6 +1045,7 @@
             
             header {
                 padding: 15px 10px;
+                margin-bottom: 20px;
             }
             
             h1 {
@@ -1033,6 +1101,28 @@
             .option input {
                 margin-right: 5px;
                 transform: scale(1.05);
+            }
+            
+            /* 超小屏幕：调整一些间距 */
+            .dimension {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .question {
+                padding: 12px 10px;
+            }
+            
+            /* 超小屏幕：按钮进一步优化 */
+            .submit-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+                width: 95%;
+            }
+            
+            .export-btn, .progress-btn, .admin-btn, .modal-btn {
+                padding: 10px;
+                font-size: 0.9rem;
             }
         }
         
@@ -1108,6 +1198,33 @@
             .option label {
                 padding: 5px 0;
             }
+            
+            /* 手机触摸优化：按钮增加点击区域 */
+            .submit-btn, .export-btn, .progress-btn, .admin-btn, .modal-btn {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* 手机触摸优化：单选按钮增大点击区域 */
+            .option input {
+                width: 20px;
+                height: 20px;
+            }
+            
+            /* 手机触摸优化：导航按钮增大 */
+            .nav-toggle {
+                min-height: 44px;
+                padding: 12px 16px;
+            }
+            
+            /* 手机触摸优化：问题导航中的数字增大 */
+            .nav-question {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
         }
         
         /* 打印样式优化 */
@@ -1123,7 +1240,7 @@
                 display: none !important;
             }
             
-            .submit-btn, .progress-buttons, .nav-toggle, .hidden-admin-btn {
+            .submit-btn, .progress-buttons, .nav-toggle, .hidden-admin-btn, .export-buttons {
                 display: none !important;
             }
             
@@ -1135,6 +1252,120 @@
             .unanswered-marker {
                 display: none !important;
             }
+        }
+        
+        /* 新增：手机端加载和错误提示 */
+        .mobile-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-size: 0.9rem;
+            max-width: 90%;
+            text-align: center;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: fadeInOut 3s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+        
+        /* 新增：手机端导出优化 */
+        .export-helper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .export-helper-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .export-helper-content h3 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .export-helper-content p {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .export-helper-content .export-helper-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .export-helper-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .export-helper-confirm {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .export-helper-cancel {
+            background-color: #ddd;
+            color: #333;
+        }
+        
+        /* 新增：手机端滚动优化 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 新增：手机端结果页面滚动提示 */
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .scroll-hint.show {
+            opacity: 1;
+        }
+        
+        .scroll-hint i {
+            font-size: 1.2rem;
         }
     </style>
 </head>
@@ -1150,7 +1381,27 @@
         <!-- 导航内容将通过JS动态生成 -->
     </div>
     
+    <!-- 手机端滚动提示 -->
+    <div class="scroll-hint no-print" id="scrollHint" style="display: none;">
+        <span>↓</span>
+    </div>
+    
     <div class="background-elements" id="backgroundElements"></div>
+    
+    <!-- 手机端提示 -->
+    <div class="mobile-toast" id="mobileToast"></div>
+    
+    <!-- 手机端导出帮助 -->
+    <div class="export-helper no-print" id="exportHelper">
+        <div class="export-helper-content">
+            <h3>保存测试结果</h3>
+            <p id="exportHelperText">正在生成测试结果图片，请稍候...</p>
+            <div class="export-helper-buttons" id="exportHelperButtons" style="display: none;">
+                <button class="export-helper-confirm" id="exportHelperConfirm">好的</button>
+                <button class="export-helper-cancel" id="exportHelperCancel">取消</button>
+            </div>
+        </div>
+    </div>
     
     <!-- 激活码验证部分 -->
     <section class="activation-section" id="activationSection">
@@ -1460,6 +1711,38 @@
                 }
             });
             return count;
+        }
+        
+        // 检测是否为移动设备
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // 显示手机端提示
+        function showMobileToast(message, duration = 3000) {
+            const toast = document.getElementById('mobileToast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+        
+        // 显示导出帮助
+        function showExportHelper(message, showButtons = false) {
+            const helper = document.getElementById('exportHelper');
+            const helperText = document.getElementById('exportHelperText');
+            const helperButtons = document.getElementById('exportHelperButtons');
+            
+            helperText.textContent = message;
+            helperButtons.style.display = showButtons ? 'flex' : 'none';
+            helper.style.display = 'flex';
+        }
+        
+        // 隐藏导出帮助
+        function hideExportHelper() {
+            document.getElementById('exportHelper').style.display = 'none';
         }
 
         // 测试数据 - 维度信息
@@ -2632,6 +2915,119 @@
             }
         }
 
+        // 优化导出图片功能 - 修复手机端下载问题
+        function exportToImage() {
+            try {
+                const resultsSection = document.getElementById('resultsSection');
+                const exportBtn = document.getElementById('exportImage');
+                const originalText = exportBtn.textContent;
+                
+                exportBtn.textContent = '生成中...';
+                exportBtn.disabled = true;
+                
+                // 如果是移动设备，显示帮助提示
+                if (isMobileDevice()) {
+                    showExportHelper('正在生成测试结果图片，请稍候...');
+                }
+                
+                // 设置html2canvas选项
+                const options = {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#fff5f7',
+                    width: resultsSection.scrollWidth,
+                    height: resultsSection.scrollHeight,
+                    onclone: function(clonedDoc) {
+                        // 在克隆的文档中隐藏一些不需要的元素
+                        const clonedResults = clonedDoc.getElementById('resultsSection');
+                        if (clonedResults) {
+                            const exportButtons = clonedResults.querySelector('.export-buttons');
+                            if (exportButtons) {
+                                exportButtons.style.display = 'none';
+                            }
+                        }
+                    }
+                };
+                
+                // 延迟执行以确保DOM完全渲染
+                setTimeout(() => {
+                    html2canvas(resultsSection, options).then(canvas => {
+                        // 创建下载链接
+                        const link = document.createElement('a');
+                        link.download = '结婚适配度测试结果.png';
+                        
+                        // 针对不同设备使用不同的下载方式
+                        if (isMobileDevice()) {
+                            // 移动设备：使用canvas.toBlob创建文件对象
+                            canvas.toBlob(function(blob) {
+                                const url = URL.createObjectURL(blob);
+                                link.href = url;
+                                
+                                // 尝试直接下载
+                                try {
+                                    link.click();
+                                    
+                                    // 移动设备可能需要用户手动保存
+                                    showExportHelper('图片已生成！请点击"保存图片"按钮保存测试结果。', true);
+                                    
+                                    // 更新链接为对象URL
+                                    const confirmBtn = document.getElementById('exportHelperConfirm');
+                                    confirmBtn.onclick = function() {
+                                        // 再次尝试下载
+                                        link.click();
+                                        hideExportHelper();
+                                        
+                                        // 清理对象URL
+                                        setTimeout(() => {
+                                            URL.revokeObjectURL(url);
+                                        }, 1000);
+                                    };
+                                    
+                                    const cancelBtn = document.getElementById('exportHelperCancel');
+                                    cancelBtn.onclick = hideExportHelper;
+                                    
+                                } catch (error) {
+                                    console.error('移动端下载错误:', error);
+                                    showExportHelper('图片已生成！请长按图片选择"保存图片"到相册。', true);
+                                    
+                                    // 显示图片让用户长按保存
+                                    const helperText = document.getElementById('exportHelperText');
+                                    helperText.innerHTML = `
+                                        <p>图片已生成！请长按下方图片选择"保存图片"到相册：</p>
+                                        <img src="${canvas.toDataURL('image/png')}" style="max-width: 100%; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;" alt="测试结果">
+                                    `;
+                                }
+                            });
+                        } else {
+                            // 桌面设备：直接下载
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                        }
+                        
+                        // 恢复按钮状态
+                        exportBtn.textContent = originalText;
+                        exportBtn.disabled = false;
+                        
+                    }).catch(error => {
+                        console.error('导出图片时出错:', error);
+                        alert('导出图片时出现错误，请重试。');
+                        exportBtn.textContent = originalText;
+                        exportBtn.disabled = false;
+                        hideExportHelper();
+                    });
+                }, 500); // 延迟500ms确保渲染完成
+            } catch (error) {
+                console.error('导出图片时出错:', error);
+                alert('导出图片时出现错误，请重试。');
+                
+                const exportBtn = document.getElementById('exportImage');
+                exportBtn.textContent = '导出为图片';
+                exportBtn.disabled = false;
+                hideExportHelper();
+            }
+        }
+
         // 优化PDF导出功能 - 只包含打分图表，省略评语结果
         function exportToPDF() {
             try {
@@ -2644,6 +3040,11 @@
                 const originalText = exportBtn.textContent;
                 exportBtn.textContent = '生成中...';
                 exportBtn.disabled = true;
+                
+                // 如果是移动设备，显示帮助提示
+                if (isMobileDevice()) {
+                    showExportHelper('正在生成PDF文件，请稍候...');
+                }
                 
                 // 获取图表
                 const radarCanvas = document.getElementById('radarChart');
@@ -2814,6 +3215,12 @@
                             // 恢复按钮状态
                             exportBtn.textContent = originalText;
                             exportBtn.disabled = false;
+                            hideExportHelper();
+                            
+                            // 如果是移动设备，显示成功提示
+                            if (isMobileDevice()) {
+                                showMobileToast('PDF文件已保存到下载文件夹', 3000);
+                            }
                         }).catch(error => {
                             console.error('生成PDF时出错:', error);
                             alert('生成PDF时出现错误，请重试。');
@@ -2826,6 +3233,7 @@
                             // 恢复按钮状态
                             exportBtn.textContent = originalText;
                             exportBtn.disabled = false;
+                            hideExportHelper();
                         });
                     }, 500);
                 }, 1000); // 等待图表渲染完成
@@ -2837,41 +3245,7 @@
                 const exportBtn = document.getElementById('exportPDF');
                 exportBtn.textContent = '导出为PDF';
                 exportBtn.disabled = false;
-            }
-        }
-
-        // 导出为图片
-        function exportToImage() {
-            try {
-                const resultsSection = document.getElementById('resultsSection');
-                
-                const exportBtn = document.getElementById('exportImage');
-                const originalText = exportBtn.textContent;
-                exportBtn.textContent = '生成中...';
-                exportBtn.disabled = true;
-                
-                html2canvas(resultsSection, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#fff5f7'
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = '结婚适配度测试结果.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    
-                    exportBtn.textContent = originalText;
-                    exportBtn.disabled = false;
-                }).catch(error => {
-                    console.error('导出图片时出错:', error);
-                    alert('导出图片时出现错误，请重试。');
-                    exportBtn.textContent = originalText;
-                    exportBtn.disabled = false;
-                });
-            } catch (error) {
-                console.error('导出图片时出错:', error);
-                alert('导出图片时出现错误，请重试。');
+                hideExportHelper();
             }
         }
 
@@ -2891,7 +3265,7 @@
                 });
                 
                 localStorage.setItem('testProgress', JSON.stringify(progress));
-                alert('进度已保存！您可以稍后继续测试。');
+                showMobileToast('进度已保存！您可以稍后继续测试。', 3000);
             } catch (error) {
                 console.error('保存进度时出错:', error);
                 alert('保存进度时出现错误，请重试。');
@@ -2931,7 +3305,7 @@
                 checkAllQuestionsAnswered();
                 updateQuestionNavigation();
                 
-                alert('进度已加载！');
+                showMobileToast('进度已加载！', 3000);
             } catch (error) {
                 console.error('加载进度时出错:', error);
                 alert('加载进度时出现错误，请重试。');
@@ -2962,7 +3336,7 @@
                     checkAllQuestionsAnswered();
                     updateQuestionNavigation();
                     
-                    alert('进度已清除！');
+                    showMobileToast('进度已清除！', 3000);
                 } catch (error) {
                     console.error('清除进度时出错:', error);
                     alert('清除进度时出现错误，请重试。');
@@ -3218,6 +3592,33 @@
             }
         }
 
+        // 滚动提示功能
+        function setupScrollHint() {
+            const scrollHint = document.getElementById('scrollHint');
+            let scrollTimer;
+            
+            window.addEventListener('scroll', function() {
+                clearTimeout(scrollTimer);
+                
+                // 如果用户正在滚动，显示提示
+                scrollHint.style.display = 'block';
+                scrollHint.classList.add('show');
+                
+                // 停止滚动后隐藏提示
+                scrollTimer = setTimeout(function() {
+                    scrollHint.classList.remove('show');
+                    setTimeout(function() {
+                        scrollHint.style.display = 'none';
+                    }, 300);
+                }, 1500);
+            });
+            
+            // 点击提示滚动到顶部
+            scrollHint.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
             createBackgroundElements();
@@ -3236,6 +3637,9 @@
                 // 用户需要手动点击"加载进度"才能加载之前的进度
             }
             
+            // 设置滚动提示
+            setupScrollHint();
+            
             // 激活按钮事件
             document.getElementById('activateBtn').addEventListener('click', function() {
                 const code = document.getElementById('activationInput').value.trim();
@@ -3247,124 +3651,7 @@
                     
                     // 滚动到顶部
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    alert('激活码无效、已过期或已被使用，请检查后重试');
-                }
-            });
-            
-            // 重新绑定管理员入口点击事件
-            const adminTriggers = document.querySelectorAll('.admin-trigger');
-            adminTriggers.forEach(trigger => {
-                trigger.removeEventListener('click', handleAdminClick);
-                trigger.addEventListener('click', handleAdminClick, {capture: true});
-            });
-            
-            // 隐藏管理员按钮事件
-            document.getElementById('hiddenAdminBtn').addEventListener('click', function() {
-                window.showAdminAccess();
-            });
-            
-            // 生成激活码按钮事件
-            document.getElementById('generateCodesBtn').addEventListener('click', function() {
-                const codes = generateActivationCodes();
-                displayActivationCodes(codes);
-            });
-            
-            // 清除所有数据按钮事件
-            document.getElementById('clearStorageBtn').addEventListener('click', function() {
-                if (confirm('确定要清除所有测试数据和激活码吗？此操作不可逆！')) {
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    window.activationCodes = {};
-                    alert('所有数据已清除');
-                    location.reload();
-                }
-            });
-            
-            // 返回激活页面按钮事件
-            document.getElementById('backToActivationBtn').addEventListener('click', function() {
-                document.getElementById('adminSection').style.display = 'none';
-                document.getElementById('activationSection').style.display = 'block';
-            });
-            
-            // 保存进度按钮事件
-            document.getElementById('saveProgressBtn').addEventListener('click', saveProgress);
-            
-            // 加载进度按钮事件
-            document.getElementById('loadProgressBtn').addEventListener('click', loadProgress);
-            
-            // 清除进度按钮事件
-            document.getElementById('clearProgressBtn').addEventListener('click', clearProgress);
-            
-            // 问题导航切换按钮事件
-            document.getElementById('navToggle').addEventListener('click', function() {
-                const nav = document.getElementById('questionNavigation');
-                if (nav.style.display === 'block') {
-                    nav.style.display = 'none';
-                    this.textContent = '问题导航';
-                } else {
-                    nav.style.display = 'block';
-                    this.textContent = '隐藏导航';
-                }
-            });
-            
-            // 提交按钮事件监听
-            document.getElementById('calculateResults').addEventListener('click', function() {
-                if (!checkAllQuestionsAnswered()) {
-                    alert('请完成所有题目后再提交测试！');
-                    return;
-                }
-                
-                document.getElementById('confirmationModal').style.display = 'flex';
-            });
-            
-            // 确认提交按钮事件
-            document.getElementById('confirmSubmit').addEventListener('click', function() {
-                const submitBtn = document.getElementById('calculateResults');
-                submitBtn.classList.add('loading-btn');
-                submitBtn.textContent = '计算中...';
-                
-                try {
-                    const { totalScore, dimensionScores } = calculateScores();
-                    displayResults(totalScore, dimensionScores);
-                    document.getElementById('confirmationModal').style.display = 'none';
-                } catch (error) {
-                    console.error('计算得分时出错:', error);
-                    alert('计算得分时出现错误，请刷新页面重试。');
-                } finally {
-                    submitBtn.classList.remove('loading-btn');
-                    submitBtn.textContent = '计算测试结果';
-                }
-            });
-            
-            // 取消提交按钮事件
-            document.getElementById('cancelSubmit').addEventListener('click', function() {
-                document.getElementById('confirmationModal').style.display = 'none';
-            });
-            
-            // 导出按钮事件
-            document.getElementById('exportImage').addEventListener('click', exportToImage);
-            document.getElementById('exportPDF').addEventListener('click', exportToPDF);
-        });
-
-        // 备用初始化方案
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(function() {
-                    const adminTriggers = document.querySelectorAll('.admin-trigger');
-                    adminTriggers.forEach(trigger => {
-                        trigger.addEventListener('click', handleAdminClick, {capture: true});
-                    });
-                }, 100);
-            });
-        } else {
-            setTimeout(function() {
-                const adminTriggers = document.querySelectorAll('.admin-trigger');
-                adminTriggers.forEach(trigger => {
-                    trigger.addEventListener('click', handleAdminClick, {capture: true});
-                });
-            }, 100);
-        }
-    </script>
-</body>
-</html>
+                    
+                    // 显示欢迎提示
+                    showMobileToast('欢迎使用结婚适配度测试表！', 3000);
+               
