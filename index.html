@@ -160,12 +160,13 @@
         
         .question {
             margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border-radius: 8px;
             background-color: white;
             position: relative;
             overflow: hidden;
             min-height: 80px;
+            border: 1px solid #f0f0f0;
         }
         
         .question.unanswered {
@@ -175,34 +176,34 @@
         
         .unanswered-marker {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background-color: #ff6b6b;
             color: white;
-            padding: 3px 10px;
+            padding: 2px 6px;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             z-index: 2;
             white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 40px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 35px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .options {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 8px;
-            padding-right: 80px; /* 为未答标签留出空间，防止重叠 */
+            margin-top: 12px;
         }
         
         .option {
             display: flex;
             align-items: center;
             margin-right: 15px;
+            flex: 0 0 auto;
         }
         
         .option input {
@@ -758,20 +759,20 @@
             box-shadow: var(--shadow);
         }
         
-        /* 新增：响应式调整 - 手机端优化 */
+        /* 新增：响应式调整 - 手机端优化 - 重新设计 */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
-                margin: 10px;
+                padding: 12px;
+                margin: 8px;
                 border-radius: 10px;
             }
             
             h1 {
-                font-size: 1.8rem;
+                font-size: 1.7rem;
             }
             
             h2 {
-                font-size: 1.3rem;
+                font-size: 1.25rem;
             }
             
             h3 {
@@ -789,35 +790,42 @@
             
             .dimension {
                 padding: 12px;
+                margin-bottom: 20px;
             }
             
             .question {
-                padding: 12px 10px 10px 10px;
+                padding: 15px 12px;
+                margin-bottom: 15px;
                 min-height: auto;
+                border-radius: 8px;
             }
             
-            /* 移动端调整未答标签位置和样式 */
+            /* 移动端调整未答标签位置和样式 - 缩小 */
             .unanswered-marker {
                 position: absolute;
-                top: 8px;
-                right: 8px;
-                padding: 2px 8px;
-                font-size: 0.7rem;
-                min-width: 35px;
+                top: 6px;
+                right: 6px;
+                padding: 1px 5px;
+                font-size: 0.6rem;
+                min-width: 30px;
                 z-index: 5;
+                border-radius: 8px;
             }
             
+            /* 手机端：5个选项两列排放 */
             .options {
-                padding-right: 0; /* 移动端去掉右边距 */
-                margin-top: 15px; /* 增加与未答标签的间距 */
-                flex-direction: column;
-                gap: 5px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-top: 15px;
+                padding-right: 0;
             }
             
             .option {
                 margin-right: 0;
-                padding: 5px 0;
+                padding: 6px 0;
                 width: 100%;
+                align-items: center;
             }
             
             .option label {
@@ -825,6 +833,20 @@
                 display: flex;
                 align-items: center;
                 width: 100%;
+                line-height: 1.4;
+            }
+            
+            .option input {
+                margin-right: 6px;
+                transform: scale(1.1);
+            }
+            
+            /* 调整问题文本布局，为未答标签留出空间但不大 */
+            .question p {
+                padding-right: 40px;
+                font-size: 0.95rem;
+                line-height: 1.5;
+                margin-bottom: 0;
             }
             
             .modal-content {
@@ -833,6 +855,7 @@
             
             .modal-buttons {
                 flex-direction: column;
+                gap: 10px;
             }
             
             .charts-container {
@@ -847,6 +870,7 @@
             
             .export-buttons {
                 flex-direction: column;
+                gap: 10px;
             }
             
             .question-navigation {
@@ -871,10 +895,11 @@
             }
             
             .submit-btn {
-                padding: 12px 30px;
+                padding: 14px 30px;
                 font-size: 1.1rem;
                 width: 90%;
                 max-width: 300px;
+                border-radius: 50px;
             }
             
             .activation-section, .admin-section {
@@ -910,7 +935,7 @@
             }
             
             .special-questions .question {
-                padding-right: 10px;
+                padding-right: 12px;
             }
             
             /* 移动端表格列宽调整 */
@@ -938,6 +963,11 @@
             .results-table td:nth-child(5) {
                 width: 30%;
             }
+            
+            /* 调整特殊问题选项布局 */
+            .special-questions .options {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         @media (max-width: 480px) {
@@ -959,14 +989,18 @@
             }
             
             .question p {
-                font-size: 0.95rem;
-                line-height: 1.5;
-                margin-bottom: 8px;
-                padding-right: 45px; /* 为未答标签留出空间 */
+                font-size: 0.92rem;
+                line-height: 1.45;
+                padding-right: 35px; /* 为未答标签留出更小空间 */
             }
             
+            /* 小屏幕手机：选项两列，字体稍小 */
             .option label {
                 font-size: 0.85rem;
+            }
+            
+            .options {
+                gap: 6px;
             }
             
             .dimension-score {
@@ -988,11 +1022,29 @@
             }
             
             .unanswered-marker {
-                top: 6px;
-                right: 6px;
-                padding: 2px 6px;
-                font-size: 0.65rem;
-                min-width: 30px;
+                top: 5px;
+                right: 5px;
+                padding: 1px 4px;
+                font-size: 0.55rem;
+                min-width: 28px;
+            }
+            
+            /* 小屏幕手机：选项布局微调 */
+            .option input {
+                margin-right: 5px;
+                transform: scale(1.05);
+            }
+        }
+        
+        @media (min-width: 481px) and (max-width: 768px) {
+            /* 中等尺寸手机：选项布局优化 */
+            .options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .question p {
+                padding-right: 45px;
             }
         }
         
@@ -1022,7 +1074,6 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
             hyphens: auto;
-            margin-right: 80px; /* 为"未答"标签留出空间 */
         }
         
         /* 触摸设备优化 */
@@ -1049,7 +1100,13 @@
             }
             
             .unanswered-marker {
-                padding: 4px 10px; /* 增大触摸区域 */
+                padding: 4px 8px; /* 增大触摸区域 */
+                min-width: 35px;
+            }
+            
+            /* 手机触摸优化：选项更容易点击 */
+            .option label {
+                padding: 5px 0;
             }
         }
         
@@ -1072,6 +1129,11 @@
             
             .results-section {
                 display: block !important;
+            }
+            
+            /* 打印时隐藏未答标签 */
+            .unanswered-marker {
+                display: none !important;
             }
         }
     </style>
