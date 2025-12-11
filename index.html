@@ -165,6 +165,7 @@
             background-color: white;
             position: relative;
             overflow: hidden;
+            min-height: 80px;
         }
         
         .question.unanswered {
@@ -178,11 +179,16 @@
             right: 10px;
             background-color: #ff6b6b;
             color: white;
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 10px;
             font-size: 0.8rem;
             z-index: 2;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .options {
@@ -190,6 +196,7 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 8px;
+            padding-right: 80px; /* 为未答标签留出空间，防止重叠 */
         }
         
         .option {
@@ -233,6 +240,7 @@
             border-collapse: collapse;
             margin: 20px 0;
             font-size: 0.9rem;
+            table-layout: fixed; /* 固定表格布局，避免空置太多 */
         }
         
         .results-table th, .results-table td {
@@ -240,15 +248,21 @@
             padding: 8px;
             text-align: center;
             word-break: break-word;
+            overflow-wrap: break-word;
         }
         
         .results-table th {
             background-color: var(--secondary-color);
             color: white;
+            font-weight: bold;
         }
         
-        .results-table tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .results-table td {
+            background-color: white;
+        }
+        
+        .results-table tr:nth-child(even) td {
+            background-color: #f9f9f9;
         }
         
         .commentary {
@@ -493,6 +507,9 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 300px;
+            display: flex;
+            flex-direction: column;
         }
         
         .chart-title {
@@ -500,6 +517,14 @@
             margin-bottom: 15px;
             color: var(--dark-color);
             font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .chart-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: calc(100% - 30px);
         }
         
         .export-buttons {
@@ -733,7 +758,7 @@
             box-shadow: var(--shadow);
         }
         
-        /* 新增：响应式调整 */
+        /* 新增：响应式调整 - 手机端优化 */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -768,20 +793,23 @@
             
             .question {
                 padding: 12px 10px 10px 10px;
+                min-height: auto;
             }
             
+            /* 移动端调整未答标签位置和样式 */
             .unanswered-marker {
-                position: relative;
-                top: auto;
-                right: auto;
-                display: inline-block;
-                margin-bottom: 8px;
-                margin-left: 0;
-                padding: 3px 10px;
-                font-size: 0.75rem;
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                padding: 2px 8px;
+                font-size: 0.7rem;
+                min-width: 35px;
+                z-index: 5;
             }
             
             .options {
+                padding-right: 0; /* 移动端去掉右边距 */
+                margin-top: 15px; /* 增加与未答标签的间距 */
                 flex-direction: column;
                 gap: 5px;
             }
@@ -789,10 +817,14 @@
             .option {
                 margin-right: 0;
                 padding: 5px 0;
+                width: 100%;
             }
             
             .option label {
                 font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                width: 100%;
             }
             
             .modal-content {
@@ -810,6 +842,7 @@
             .chart-wrapper {
                 max-width: 100%;
                 min-width: 100%;
+                height: 250px;
             }
             
             .export-buttons {
@@ -863,10 +896,13 @@
             
             .results-table {
                 font-size: 0.8rem;
+                display: block;
+                overflow-x: auto;
             }
             
             .results-table th, .results-table td {
                 padding: 6px 4px;
+                min-width: 60px;
             }
             
             .dimension-footer {
@@ -875,6 +911,32 @@
             
             .special-questions .question {
                 padding-right: 10px;
+            }
+            
+            /* 移动端表格列宽调整 */
+            .results-table th:nth-child(1),
+            .results-table td:nth-child(1) {
+                width: 25%;
+            }
+            
+            .results-table th:nth-child(2),
+            .results-table td:nth-child(2) {
+                width: 15%;
+            }
+            
+            .results-table th:nth-child(3),
+            .results-table td:nth-child(3) {
+                width: 15%;
+            }
+            
+            .results-table th:nth-child(4),
+            .results-table td:nth-child(4) {
+                width: 15%;
+            }
+            
+            .results-table th:nth-child(5),
+            .results-table td:nth-child(5) {
+                width: 30%;
             }
         }
         
@@ -900,6 +962,7 @@
                 font-size: 0.95rem;
                 line-height: 1.5;
                 margin-bottom: 8px;
+                padding-right: 45px; /* 为未答标签留出空间 */
             }
             
             .option label {
@@ -911,9 +974,7 @@
             }
             
             .results-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
+                font-size: 0.75rem;
             }
             
             .balloon {
@@ -924,6 +985,14 @@
             .hidden-admin-btn {
                 width: 25px;
                 height: 25px;
+            }
+            
+            .unanswered-marker {
+                top: 6px;
+                right: 6px;
+                padding: 2px 6px;
+                font-size: 0.65rem;
+                min-width: 30px;
             }
         }
         
@@ -936,10 +1005,15 @@
             
             .chart-wrapper {
                 min-width: 45%;
+                height: 280px;
             }
             
             .options {
                 gap: 8px;
+            }
+            
+            .results-table {
+                font-size: 0.85rem;
             }
         }
         
@@ -949,12 +1023,6 @@
             word-wrap: break-word;
             hyphens: auto;
             margin-right: 80px; /* 为"未答"标签留出空间 */
-        }
-        
-        @media (max-width: 768px) {
-            .question p {
-                margin-right: 0;
-            }
         }
         
         /* 触摸设备优化 */
@@ -979,18 +1047,44 @@
                 transform: scale(1.2); /* 增大触摸目标 */
                 margin-right: 8px;
             }
+            
+            .unanswered-marker {
+                padding: 4px 10px; /* 增大触摸区域 */
+            }
+        }
+        
+        /* 打印样式优化 */
+        @media print {
+            .container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .submit-btn, .progress-buttons, .nav-toggle, .hidden-admin-btn {
+                display: none !important;
+            }
+            
+            .results-section {
+                display: block !important;
+            }
         }
     </style>
 </head>
 <body>
     <!-- 隐藏的管理员按钮 -->
-    <button class="hidden-admin-btn" id="hiddenAdminBtn" title="管理员入口"></button>
+    <button class="hidden-admin-btn no-print" id="hiddenAdminBtn" title="管理员入口"></button>
     
     <!-- 问题导航按钮 -->
-    <button class="nav-toggle" id="navToggle">问题导航</button>
+    <button class="nav-toggle no-print" id="navToggle">问题导航</button>
     
     <!-- 问题导航面板 -->
-    <div class="question-navigation" id="questionNavigation">
+    <div class="question-navigation no-print" id="questionNavigation">
         <!-- 导航内容将通过JS动态生成 -->
     </div>
     
@@ -1009,7 +1103,7 @@
     </section>
     
     <!-- 管理员界面 -->
-    <section class="admin-section" id="adminSection">
+    <section class="admin-section no-print" id="adminSection">
         <h2>激活码管理系统</h2>
         <p>当前时间: <span id="currentTime"></span></p>
         <button class="admin-btn" id="generateCodesBtn">生成20个激活码（有效期30天）</button>
@@ -1019,8 +1113,8 @@
             <h4 style="color: #2d7dd2; margin-bottom: 10px;">预设激活码</h4>
             <p>以下激活码已预设，所有用户均可使用：</p>
             <div style="margin-top: 10px;">
-                <p><strong>DHKE0788DU</strong> - 无限使用次数</p>
-                <p><strong>DHYT8867RE</strong> - 无限使用次数</p>
+                <p><strong>885718</strong> - 无限使用次数</p>
+                <p><strong>361895</strong> - 无限使用次数</p>
             </div>
         </div>
         
@@ -1050,7 +1144,7 @@
         </section>
         
         <!-- 新增：进度管理按钮 -->
-        <div class="progress-buttons">
+        <div class="progress-buttons no-print">
             <button class="progress-btn" id="saveProgressBtn">保存进度</button>
             <button class="progress-btn" id="loadProgressBtn">加载进度</button>
             <button class="progress-btn" id="clearProgressBtn">清除进度</button>
@@ -1102,7 +1196,7 @@
             </div>
         </section>
         
-        <button type="button" class="submit-btn" id="calculateResults" disabled>计算测试结果</button>
+        <button type="button" class="submit-btn no-print" id="calculateResults" disabled>计算测试结果</button>
         
         <section class="results-section" id="resultsSection">
             <h2>测试结果</h2>
@@ -1111,11 +1205,15 @@
             <div class="charts-container">
                 <div class="chart-wrapper">
                     <div class="chart-title">各维度得分雷达图</div>
-                    <canvas id="radarChart"></canvas>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-wrapper">
                     <div class="chart-title">各维度得分柱状图</div>
-                    <canvas id="barChart"></canvas>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
                 </div>
             </div>
             
@@ -1164,7 +1262,7 @@
             </div>
             
             <!-- 导出按钮 -->
-            <div class="export-buttons">
+            <div class="export-buttons no-print">
                 <button class="export-btn" id="exportImage">导出为图片</button>
                 <button class="export-btn" id="exportPDF">导出为PDF</button>
             </div>
@@ -1177,7 +1275,7 @@
     </div>
 
     <!-- 确认提交模态框 -->
-    <div class="confirmation-modal" id="confirmationModal">
+    <div class="confirmation-modal no-print" id="confirmationModal">
         <div class="modal-content">
             <h3>确认提交测试</h3>
             <p>您确定要提交测试并查看结果吗？提交后将无法修改答案。</p>
@@ -1185,6 +1283,13 @@
                 <button class="modal-btn modal-confirm" id="confirmSubmit">确认提交</button>
                 <button class="modal-btn modal-cancel" id="cancelSubmit">再检查一下</button>
             </div>
+        </div>
+    </div>
+
+    <!-- PDF导出模板（隐藏） -->
+    <div id="pdfTemplate" style="display: none; position: fixed; left: -9999px; top: -9999px; width: 210mm; min-height: 297mm; padding: 20mm; background-color: white; font-family: 'Arial', sans-serif; z-index: 99999;">
+        <div id="pdfContent">
+            <!-- PDF内容将通过JS动态生成 -->
         </div>
     </div>
 
@@ -1202,10 +1307,10 @@
             window.radarChart = null;
             window.barChart = null;
             
-            // 预设激活码
+            // 预设激活码 - 已更改为885718和361895
             window.PRESET_CODES = [
-                { code: "DHKE0788DU", maxUses: 10000, isPublic: true, preset: true },
-                { code: "DHYT8867RE", maxUses: 10000, isPublic: true, preset: true }
+                { code: "885718", maxUses: 10000, isPublic: true, preset: true },
+                { code: "361895", maxUses: 10000, isPublic: true, preset: true }
             ];
             
             // 全局管理员唤醒函数
@@ -1479,8 +1584,8 @@
             }
         ];
 
-        // 反向计分题列表 - 动态生成
-        let reverseQuestions = [];
+        // 特殊反向计分题 - 第34题和第62题（生活方式维度第4题和工作与事业维度第2题）
+        const SPECIAL_REVERSE_QUESTIONS = [34, 62];
 
         // 情感专家评语系统
         const expertComments = {
@@ -1749,13 +1854,11 @@
             createBalloons();
         }
 
-        // 生成测试题目
+        // 生成测试题目 - 修复：移除从localStorage自动加载答案的功能
         function generateTestQuestions() {
             const form = document.getElementById('compatibilityTest');
             form.innerHTML = '';
             let questionCount = 0;
-            
-            reverseQuestions = [];
             
             dimensions.forEach((dimension, dimIndex) => {
                 const dimensionDiv = document.createElement('div');
@@ -1789,16 +1892,16 @@
                     questionText.innerHTML = `<strong>${questionCount}.</strong> ${dimension.questionsText[i]}`;
                     questionDiv.appendChild(questionText);
                     
-                    if (dimension.questionsText[i].includes('（反）')) {
-                        reverseQuestions.push(`${dimension.id}-${i+1}`);
-                    }
-                    
                     const optionsDiv = document.createElement('div');
                     optionsDiv.className = 'options';
                     
-                    const isSpecialReverse = (questionCount === 34 || questionCount === 62);
+                    // 检查是否为反向计分题（包括特殊反向题和标记"（反）"的题目）
+                    const isSpecialReverse = SPECIAL_REVERSE_QUESTIONS.includes(questionCount);
+                    const isReverse = dimension.questionsText[i].includes('（反）');
+                    const isReverseScoring = isSpecialReverse || isReverse;
                     
-                    const optionValues = isSpecialReverse ? [
+                    // 根据是否为反向计分题设置不同的选项值
+                    const optionValues = isReverseScoring ? [
                         { text: "是", value: 1, displayScore: 1 },
                         { text: "基本是", value: 2, displayScore: 2 },
                         { text: "不确定", value: 3, displayScore: 3 },
@@ -1822,10 +1925,9 @@
                         input.value = option.value;
                         input.id = `${dimension.id}-${i+1}-${option.value}`;
                         
-                        const savedAnswer = localStorage.getItem(`${dimension.id}-${i+1}`);
-                        if (savedAnswer && savedAnswer === option.value) {
-                            input.checked = true;
-                        }
+                        // 修复：激活后不自动从localStorage加载答案
+                        // 只有在明确点击"加载进度"时才加载
+                        // 这里不设置checked属性，让用户自己选择
                         
                         input.addEventListener('change', function() {
                             localStorage.setItem(`${dimension.id}-${i+1}`, this.value);
@@ -1991,11 +2093,6 @@
                 
                 if (selectedOption) {
                     let score = parseInt(selectedOption.value);
-                    
-                    if (reverseQuestions.includes(questionName)) {
-                        score = 6 - score;
-                    }
-                    
                     dimensionScore += score;
                 }
             }
@@ -2033,11 +2130,6 @@
                         
                         if (selectedOption) {
                             let score = parseInt(selectedOption.value);
-                            
-                            if (reverseQuestions.includes(questionName)) {
-                                score = 6 - score;
-                            }
-                            
                             dimensionScore += score;
                         }
                     }
@@ -2070,23 +2162,18 @@
             }
         }
 
-        // 创建雷达图
+        // 创建雷达图 - 修复图表显示问题
         function createRadarChart(dimensionScores) {
             try {
-                const ctx = document.getElementById('radarChart');
-                if (!ctx) {
+                const canvas = document.getElementById('radarChart');
+                if (!canvas) {
                     console.error('找不到雷达图canvas元素');
                     return;
                 }
                 
-                const context = ctx.getContext('2d');
-                if (!context) {
-                    console.error('无法获取canvas上下文');
-                    return;
-                }
-                
-                if (radarChart) {
-                    radarChart.destroy();
+                // 销毁旧图表实例
+                if (window.radarChart && typeof window.radarChart.destroy === 'function') {
+                    window.radarChart.destroy();
                 }
                 
                 const labels = dimensions.map(d => d.name);
@@ -2097,7 +2184,7 @@
                     Math.round((dimensionScores[d.id] / maxScores[i]) * 100)
                 );
                 
-                radarChart = new Chart(context, {
+                window.radarChart = new Chart(canvas, {
                     type: 'radar',
                     data: {
                         labels: labels,
@@ -2109,22 +2196,35 @@
                             pointBackgroundColor: 'rgba(255, 107, 157, 1)',
                             pointBorderColor: '#fff',
                             pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(255, 107, 157, 1)'
+                            pointHoverBorderColor: 'rgba(255, 107, 157, 1)',
+                            borderWidth: 2,
+                            pointRadius: 4
                         }]
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         scales: {
                             r: {
                                 angleLines: {
-                                    display: true
+                                    display: true,
+                                    color: 'rgba(0,0,0,0.1)'
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
                                 },
                                 suggestedMin: 0,
                                 suggestedMax: 100,
                                 ticks: {
+                                    backdropColor: 'rgba(255,255,255,0.8)',
                                     callback: function(value) {
                                         return value + '%';
+                                    },
+                                    stepSize: 20
+                                },
+                                pointLabels: {
+                                    font: {
+                                        size: 12
                                     }
                                 }
                             }
@@ -2150,26 +2250,22 @@
                 });
             } catch (error) {
                 console.error('创建雷达图时出错:', error);
+                alert('创建雷达图时出现错误，请刷新页面重试。');
             }
         }
 
-        // 创建柱状图
+        // 创建柱状图 - 修复图表显示问题
         function createBarChart(dimensionScores) {
             try {
-                const ctx = document.getElementById('barChart');
-                if (!ctx) {
+                const canvas = document.getElementById('barChart');
+                if (!canvas) {
                     console.error('找不到柱状图canvas元素');
                     return;
                 }
                 
-                const context = ctx.getContext('2d');
-                if (!context) {
-                    console.error('无法获取canvas上下文');
-                    return;
-                }
-                
-                if (barChart) {
-                    barChart.destroy();
+                // 销毁旧图表实例
+                if (window.barChart && typeof window.barChart.destroy === 'function') {
+                    window.barChart.destroy();
                 }
                 
                 const labels = dimensions.map(d => d.name);
@@ -2185,7 +2281,7 @@
                     return 'rgba(220, 53, 69, 0.7)';
                 });
                 
-                barChart = new Chart(context, {
+                window.barChart = new Chart(canvas, {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -2204,24 +2300,47 @@
                                 fill: false,
                                 borderColor: 'rgba(255, 193, 7, 1)',
                                 borderWidth: 2,
-                                pointRadius: 0,
-                                tension: 0
+                                borderDash: [5, 5],
+                                pointRadius: 0
                             }
                         ]
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
                                     text: '得分'
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 0,
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             }
                         },
                         plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
@@ -2245,6 +2364,7 @@
                 });
             } catch (error) {
                 console.error('创建柱状图时出错:', error);
+                alert('创建柱状图时出现错误，请刷新页面重试。');
             }
         }
 
@@ -2282,16 +2402,18 @@
                 
                 totalScoreCell.innerHTML = `<strong>${totalScore}</strong> 分`;
                 
+                // 确保结果区域显示后再创建图表
+                resultsSection.style.display = 'block';
+                
+                // 延迟创建图表以确保DOM完全渲染
                 setTimeout(() => {
                     createRadarChart(dimensionScores);
                     createBarChart(dimensionScores);
-                }, 100);
+                }, 300);
                 
                 commentary.innerHTML = generateCommentary(totalScore, dimensionScores, passedDimensions, totalDimensions);
                 
                 personalizedAdviceSection.innerHTML = generatePersonalizedAdvice(dimensionScores);
-                
-                resultsSection.style.display = 'block';
                 
                 resultsSection.scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
@@ -2448,6 +2570,214 @@
             }
         }
 
+        // 优化PDF导出功能 - 只包含打分图表，省略评语结果
+        function exportToPDF() {
+            try {
+                // 计算得分
+                const { totalScore, dimensionScores } = calculateScores();
+                const passedDimensions = dimensions.filter(dim => dimensionScores[dim.id] >= dim.passScore).length;
+                const totalDimensions = dimensions.length;
+                
+                const exportBtn = document.getElementById('exportPDF');
+                const originalText = exportBtn.textContent;
+                exportBtn.textContent = '生成中...';
+                exportBtn.disabled = true;
+                
+                // 获取图表
+                const radarCanvas = document.getElementById('radarChart');
+                const barCanvas = document.getElementById('barChart');
+                
+                // 等待图表渲染完成
+                setTimeout(() => {
+                    // 创建一个临时容器用于PDF生成
+                    const tempContainer = document.createElement('div');
+                    tempContainer.style.position = 'fixed';
+                    tempContainer.style.left = '-9999px';
+                    tempContainer.style.top = '-9999px';
+                    tempContainer.style.width = '210mm';
+                    tempContainer.style.minHeight = '297mm';
+                    tempContainer.style.padding = '20mm';
+                    tempContainer.style.backgroundColor = 'white';
+                    tempContainer.style.fontFamily = 'Arial, sans-serif';
+                    tempContainer.style.zIndex = '99999';
+                    
+                    // 生成PDF内容 - 只包含图表和得分表，省略评语
+                    let html = `
+                        <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #ff6b9d, #ffb6c1); color: white; border-radius: 10px;">
+                            <h1 style="font-size: 24px; margin-bottom: 10px;">结婚适配度测试结果报告</h1>
+                            <p style="font-size: 14px;">测试时间: ${new Date().toLocaleString()}</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h2 style="font-size: 18px; margin-bottom: 10px; color: #8b3a62; border-bottom: 2px solid #ffb6c1; padding-bottom: 5px;">测试结果摘要</h2>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 16px; font-weight: bold; color: #333;">测试总分</div>
+                                    <div style="font-size: 28px; font-weight: bold; color: #ff6b9d; margin-top: 5px;">${totalScore}分</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 16px; font-weight: bold; color: #333;">通过维度</div>
+                                    <div style="font-size: 28px; font-weight: bold; color: #28a745; margin-top: 5px;">${passedDimensions}/${totalDimensions}</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 16px; font-weight: bold; color: #333;">适配度评级</div>
+                                    <div style="font-size: 28px; font-weight: bold; color: ${totalScore >= 450 ? '#6f42c1' : totalScore >= 400 ? '#28a745' : totalScore >= 350 ? '#007bff' : totalScore >= 300 ? '#ffc107' : '#dc3545'}; margin-top: 5px;">
+                                        ${totalScore >= 450 ? '闭眼冲' : totalScore >= 400 ? '优秀' : totalScore >= 350 ? '达标' : totalScore >= 300 ? '待提升' : '慎重'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 添加图表（如果有的话）
+                    if (radarCanvas && barCanvas) {
+                        html += `
+                            <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                                <h2 style="font-size: 18px; margin-bottom: 10px; color: #8b3a62; border-bottom: 2px solid #ffb6c1; padding-bottom: 5px;">数据可视化图表</h2>
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px;">
+                                    <div style="flex: 1; min-width: 300px;">
+                                        <h3 style="font-size: 16px; text-align: center; margin-bottom: 10px; color: #333;">各维度得分雷达图</h3>
+                                        <div style="width: 100%; height: 250px;">
+                                            <img src="${radarCanvas.toDataURL('image/png')}" style="width: 100%; height: 100%; object-fit: contain;" alt="雷达图">
+                                        </div>
+                                    </div>
+                                    <div style="flex: 1; min-width: 300px;">
+                                        <h3 style="font-size: 16px; text-align: center; margin-bottom: 10px; color: #333;">各维度得分柱状图</h3>
+                                        <div style="width: 100%; height: 250px;">
+                                            <img src="${barCanvas.toDataURL('image/png')}" style="width: 100%; height: 100%; object-fit: contain;" alt="柱状图">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 添加详细得分表
+                    html += `
+                        <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                            <h2 style="font-size: 18px; margin-bottom: 10px; color: #8b3a62; border-bottom: 2px solid #ffb6c1; padding-bottom: 5px;">各维度得分详情</h2>
+                            <table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; background-color: #f0f0f0; font-weight: bold;">维度名称</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; background-color: #f0f0f0; font-weight: bold;">题目编号</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; background-color: #f0f0f0; font-weight: bold;">维度得分</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; background-color: #f0f0f0; font-weight: bold;">满分</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; background-color: #f0f0f0; font-weight: bold;">评价等级</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    dimensions.forEach(dimension => {
+                        const score = dimensionScores[dimension.id];
+                        const maxScore = dimension.questions * 5;
+                        const rating = getRatingLevel(score, maxScore);
+                        
+                        let color;
+                        switch(rating.level) {
+                            case "闭眼冲": color = "#6f42c1"; break;
+                            case "优秀": color = "#28a745"; break;
+                            case "达标": color = "#007bff"; break;
+                            case "待提升": color = "#ffc107"; break;
+                            case "慎重": color = "#dc3545"; break;
+                            default: color = "#333";
+                        }
+                        
+                        html += `
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${dimension.name}</td>
+                                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${getQuestionRange(dimension.id)}</td>
+                                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${score}</td>
+                                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${maxScore}</td>
+                                <td style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; color: ${color};">${rating.level}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold;">测试总分</td>
+                                        <td colspan="3" style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; color: #ff6b9d; font-size: 14px;">${totalScore} 分</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    `;
+                    
+                    // 添加免责声明
+                    html += `
+                        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; page-break-inside: avoid;">
+                            <p style="font-size: 12px; color: #777; line-height: 1.4;">
+                                <strong>免责提示：</strong>本测试基于婚恋心理学及市场调研数据设计，仅为情侣评估婚姻适配度提供参考，不构成婚姻决策的唯一依据。婚姻质量取决于双方的沟通、包容与共同经营，建议结合实际情况综合考量，必要时可咨询专业婚恋咨询师。
+                            </p>
+                            <p style="font-size: 12px; color: #777; margin-top: 10px;">
+                                海豚婚恋成长研究所 版权所有，禁止未经授权转载、修改或商用。
+                            </p>
+                        </div>
+                    `;
+                    
+                    tempContainer.innerHTML = html;
+                    document.body.appendChild(tempContainer);
+                    
+                    // 等待内容渲染
+                    setTimeout(() => {
+                        html2canvas(tempContainer, {
+                            scale: 2,
+                            useCORS: true,
+                            logging: false,
+                            backgroundColor: '#ffffff',
+                            width: tempContainer.scrollWidth,
+                            height: tempContainer.scrollHeight
+                        }).then(canvas => {
+                            // 创建PDF
+                            const pdf = new jsPDF('p', 'mm', 'a4');
+                            const pageWidth = pdf.internal.pageSize.getWidth();
+                            const pageHeight = pdf.internal.pageSize.getHeight();
+                            
+                            const imgWidth = pageWidth - 20;
+                            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                            
+                            // 添加图片到PDF
+                            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, imgWidth, imgHeight);
+                            
+                            // 保存PDF
+                            pdf.save('结婚适配度测试结果报告.pdf');
+                            
+                            // 清理临时容器
+                            document.body.removeChild(tempContainer);
+                            
+                            // 恢复按钮状态
+                            exportBtn.textContent = originalText;
+                            exportBtn.disabled = false;
+                        }).catch(error => {
+                            console.error('生成PDF时出错:', error);
+                            alert('生成PDF时出现错误，请重试。');
+                            
+                            // 清理临时容器
+                            if (tempContainer.parentNode) {
+                                document.body.removeChild(tempContainer);
+                            }
+                            
+                            // 恢复按钮状态
+                            exportBtn.textContent = originalText;
+                            exportBtn.disabled = false;
+                        });
+                    }, 500);
+                }, 1000); // 等待图表渲染完成
+                
+            } catch (error) {
+                console.error('导出PDF时出错:', error);
+                alert('导出PDF时出现错误，请重试。');
+                
+                const exportBtn = document.getElementById('exportPDF');
+                exportBtn.textContent = '导出为PDF';
+                exportBtn.disabled = false;
+            }
+        }
+
         // 导出为图片
         function exportToImage() {
             try {
@@ -2458,7 +2788,12 @@
                 exportBtn.textContent = '生成中...';
                 exportBtn.disabled = true;
                 
-                html2canvas(resultsSection).then(canvas => {
+                html2canvas(resultsSection, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#fff5f7'
+                }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = '结婚适配度测试结果.png';
                     link.href = canvas.toDataURL('image/png');
@@ -2475,40 +2810,6 @@
             } catch (error) {
                 console.error('导出图片时出错:', error);
                 alert('导出图片时出现错误，请重试。');
-            }
-        }
-
-        // 导出为PDF
-        function exportToPDF() {
-            try {
-                const resultsSection = document.getElementById('resultsSection');
-                
-                const exportBtn = document.getElementById('exportPDF');
-                const originalText = exportBtn.textContent;
-                exportBtn.textContent = '生成中...';
-                exportBtn.disabled = true;
-                
-                html2canvas(resultsSection).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    pdf.save('结婚适配度测试结果.pdf');
-                    
-                    exportBtn.textContent = originalText;
-                    exportBtn.disabled = false;
-                }).catch(error => {
-                    console.error('导出PDF时出错:', error);
-                    alert('导出PDF时出现错误，请重试。');
-                    exportBtn.textContent = originalText;
-                    exportBtn.disabled = false;
-                });
-            } catch (error) {
-                console.error('导出PDF时出错:', error);
-                alert('导出PDF时出现错误，请重试。');
             }
         }
 
@@ -2540,6 +2841,18 @@
             try {
                 const progress = JSON.parse(localStorage.getItem('testProgress')) || {};
                 
+                // 清空所有现有选择
+                dimensions.forEach(dimension => {
+                    for (let i = 1; i <= dimension.questions; i++) {
+                        const questionName = `${dimension.id}-${i}`;
+                        const inputs = document.querySelectorAll(`input[name="${questionName}"]`);
+                        inputs.forEach(input => {
+                            input.checked = false;
+                        });
+                    }
+                });
+                
+                // 加载保存的进度
                 Object.keys(progress).forEach(questionName => {
                     const value = progress[questionName];
                     const input = document.querySelector(`input[name="${questionName}"][value="${value}"]`);
@@ -2725,7 +3038,7 @@
             }
         }
         
-        // 激活码验证逻辑
+        // 激活码验证逻辑 - 修复：激活后清空进度
         function validateActivationCode(inputCode) {
             try {
                 const storedCodes = JSON.parse(localStorage.getItem('activationCodes')) || {};
@@ -2766,6 +3079,9 @@
                         sessionStorage.setItem('currentSessionActive', 'true');
                         sessionStorage.setItem('currentActivationCode', inputCode);
                         
+                        // 修复：激活后清空之前的测试进度
+                        clearProgressOnActivation();
+                        
                         return true;
                     } else {
                         console.log('激活码验证失败:', {
@@ -2787,14 +3103,35 @@
             }
         }
         
+        // 激活后清空进度
+        function clearProgressOnActivation() {
+            try {
+                // 清空localStorage中的测试进度
+                localStorage.removeItem('testProgress');
+                
+                // 清空所有已选择的答案
+                const allInputs = document.querySelectorAll('input[type="radio"]:checked');
+                allInputs.forEach(input => {
+                    input.checked = false;
+                });
+                
+                // 更新所有维度得分
+                dimensions.forEach(dimension => {
+                    updateDimensionScore(dimension.id);
+                });
+                
+                // 更新进度显示
+                updateProgress();
+                checkAllQuestionsAnswered();
+                updateQuestionNavigation();
+            } catch (error) {
+                console.error('清空进度时出错:', error);
+            }
+        }
+        
         function checkActivation() {
             // 检查当前会话是否已激活
             return sessionStorage.getItem('currentSessionActive') === 'true';
-        }
-        
-        // 显示激活码使用信息 - 已隐藏
-        function displayUsageInfo(code) {
-            // 此功能已隐藏，不再显示使用次数信息
         }
 
         // 管理员点击处理函数
@@ -2833,10 +3170,8 @@
                 generateTestQuestions();
                 updateProgress();
                 
-                const firstUnanswered = document.querySelector('input[type="radio"]:not(:checked)');
-                if (firstUnanswered) {
-                    firstUnanswered.closest('.dimension').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                // 修复：激活后不清除进度，但也不自动加载
+                // 用户需要手动点击"加载进度"才能加载之前的进度
             }
             
             // 激活按钮事件
@@ -2847,6 +3182,9 @@
                     document.getElementById('testContainer').style.display = 'block';
                     generateTestQuestions();
                     updateProgress();
+                    
+                    // 滚动到顶部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                     alert('激活码无效、已过期或已被使用，请检查后重试');
                 }
